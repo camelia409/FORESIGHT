@@ -1,8 +1,8 @@
 {
-  "run_id": "20260915_143503",
+  "run_id": "20260915_150957",
   "pipeline": "ProductionPipeline",
   "phase": "Phase 6 \u2014 Production Orchestration",
-  "execution_start": "2026-09-15T14:35:03.675419",
+  "execution_start": "2026-09-15T15:09:57.721901",
   "origin_date_requested": "2025-09-16",
   "actual_origin_date": "2025-09-01",
   "stages_executed": 9,
@@ -24,7 +24,7 @@
   "stages": {
     "INGEST": {
       "status": "PASS",
-      "elapsed_seconds": 0.0097,
+      "elapsed_seconds": 0.0066,
       "rows_loaded": {
         "inventory": 4800,
         "sku_master": 50
@@ -32,21 +32,21 @@
     },
     "VALIDATE": {
       "status": "PASS",
-      "elapsed_seconds": 0.002,
+      "elapsed_seconds": 0.0014,
       "target_snapshot_date": "2025-09-01",
       "production_skus": 50,
       "orphan_skus_quarantined": 150
     },
     "FORECAST": {
       "status": "PASS",
-      "elapsed_seconds": 3.7409,
+      "elapsed_seconds": 0.1511,
       "forecast_records": 400,
       "model_version": "1.0.0",
       "architecture": "Horizon-Segmented Hybrid"
     },
     "RISK_SCORING": {
       "status": "PASS",
-      "elapsed_seconds": 0.0615,
+      "elapsed_seconds": 0.039,
       "action_tier_counts": {
         "MONITOR": 24,
         "REORDER": 10,
@@ -56,7 +56,7 @@
     },
     "DECISION_SUPPORT": {
       "status": "PASS",
-      "elapsed_seconds": 0.0079,
+      "elapsed_seconds": 0.0054,
       "recommendation_counts": {
         "REVIEW_PIPELINE": 24,
         "PLACE_PO": 10,
@@ -72,7 +72,7 @@
     },
     "SERVE_EXPORT": {
       "status": "PASS",
-      "elapsed_seconds": 0.0098,
+      "elapsed_seconds": 0.0073,
       "artifacts_count": 2
     }
   },
@@ -88,6 +88,6 @@
     "F:\\zidio\\foresight\\reports\\phase6\\production_latest_recommendations.csv"
   ],
   "status": "COMPLETED",
-  "execution_end": "2026-09-15T14:35:07.509437",
-  "total_elapsed_seconds": 3.834
+  "execution_end": "2026-09-15T15:09:57.933540",
+  "total_elapsed_seconds": 0.2116
 }

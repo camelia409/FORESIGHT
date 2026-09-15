@@ -12,13 +12,30 @@ Strict Governance:
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
+# Ensure project root and app directory are in sys.path for Streamlit Cloud
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+APP_DIR = Path(__file__).resolve().parent.parent
+if str(APP_DIR) not in sys.path:
+    sys.path.insert(0, str(APP_DIR))
+
 import streamlit as st
 import pandas as pd
 import numpy as np
 
-from app.data_loader import (
-    load_latest_recommendations,
-)
+try:
+    from app.data_loader import (
+        load_latest_recommendations,
+    )
+except ModuleNotFoundError:
+    from data_loader import (
+        load_latest_recommendations,
+    )
+
 
 st.set_page_config(
     page_title="Action Center | FORESIGHT",

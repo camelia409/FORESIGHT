@@ -1,6 +1,6 @@
 {
   "phase": "1B \u2014 Preprocessing + Data Integration",
-  "timestamp_utc": "2026-09-15T09:04:01.591209+00:00",
+  "timestamp_utc": "2026-09-15T09:39:59.447705+00:00",
   "source_datasets": {
     "sales_daily": {
       "file": "F:\\zidio\\foresight\\data\\raw\\sales_daily.csv",
@@ -134,37 +134,37 @@
       "step": "normalize_sales",
       "rows_affected": 36550,
       "details": "Verified dtypes, non-negativity, and Revenue == Units_Sold \u00d7 Price. Rows: 36550",
-      "timestamp": "2026-09-15T09:04:01.378406+00:00"
+      "timestamp": "2026-09-15T09:39:59.170987+00:00"
     },
     {
       "step": "normalize_sku_master",
       "rows_affected": 50,
       "details": "Normalised sku_master. Identified 16 negative-margin SKUs (flagged, not altered).",
-      "timestamp": "2026-09-15T09:04:01.381365+00:00"
+      "timestamp": "2026-09-15T09:39:59.173712+00:00"
     },
     {
       "step": "normalize_calendar",
       "rows_affected": 731,
       "details": "Standardised date -> Date, preserved calendar attributes and structural NaNs.",
-      "timestamp": "2026-09-15T09:04:01.384355+00:00"
+      "timestamp": "2026-09-15T09:39:59.177841+00:00"
     },
     {
       "step": "normalize_inventory",
       "rows_affected": 4800,
       "details": "Normalised inventory. Aligned: 1200 rows (50 SKUs). Quarantined: 3600 rows (150 orphan SKUs).",
-      "timestamp": "2026-09-15T09:04:01.394255+00:00"
+      "timestamp": "2026-09-15T09:39:59.191089+00:00"
     },
     {
       "step": "handle_known_quality_issues",
       "rows_affected": 50,
       "details": "Applied policies: orphan=quarantine, neg_margin=preserve_and_flag, inv_val_basis=unresolved",
-      "timestamp": "2026-09-15T09:04:01.394328+00:00"
+      "timestamp": "2026-09-15T09:39:59.191189+00:00"
     },
     {
       "step": "integrate_datasets",
       "rows_affected": 36550,
       "details": "Integrated 4 datasets into single daily panel: 50 SKUs \u00d7 731 dates = 36550 rows. Inventory snapshots aligned: 1200.",
-      "timestamp": "2026-09-15T09:04:01.442697+00:00"
+      "timestamp": "2026-09-15T09:39:59.262780+00:00"
     }
   ],
   "invariants_summary": {
