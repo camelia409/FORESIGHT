@@ -230,27 +230,25 @@ def inject_custom_css() -> None:
 
 
 def render_page_header(title: str, description: str, tag: Optional[str] = None) -> None:
-    """Render a clean, professional enterprise top header with optional status tag."""
+    """Render a clean, professional enterprise top header with optional status tag.
+
+    Uses a flat single-div structure with float:right on the badge to avoid nested
+    intermediate divs that cause Streamlit to render stray </div> text nodes.
+    """
     tag_html = ""
     if tag:
-        tag_html = f"""
-        <div style="text-align: right;">
-            <span class="status-badge" style="background: rgba(59, 130, 246, 0.12); color: #93C5FD; border: 1px solid rgba(59, 130, 246, 0.25);">
-                {tag}
-            </span>
-        </div>
-        """
+        tag_html = (
+            f'<span class="status-badge" style="float: right; margin-top: 0.2rem;'
+            f' background: rgba(59, 130, 246, 0.12); color: #93C5FD;'
+            f' border: 1px solid rgba(59, 130, 246, 0.25);">{tag}</span>'
+        )
 
     st.markdown(
         f"""
-        <div class="page-header">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                <div>
-                    <h1 class="page-title">{title}</h1>
-                    <p class="page-subtitle">{description}</p>
-                </div>
-                {tag_html}
-            </div>
+        <div class="page-header" style="overflow: hidden;">
+            {tag_html}
+            <h1 class="page-title">{title}</h1>
+            <p class="page-subtitle">{description}</p>
         </div>
         """,
         unsafe_allow_html=True,

@@ -4,7 +4,10 @@
 [![Python Version](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue)](requirements.txt)
 [![Governance Status](https://img.shields.io/badge/governance-RATIFIED-success)](reports/governance/phase5_policy_ratification_record.md)
 [![Production Universe](https://img.shields.io/badge/production%20universe-50%20SKUs%20(150%20Quarantined)-informational)](data/raw/sku_master.csv)
-[![Deployment](https://img.shields.io/badge/deployment-STREAMLIT%20CLOUD%20%2B%20FASTAPI-blueviolet)](app/streamlit_app.py)
+[![Deployment](https://img.shields.io/badge/deployment-STREAMLIT%20CLOUD%20%2B%20FASTAPI-blueviolet)](https://foresight-29xt5kprgtm46lkeelkrpg.streamlit.app/)
+[![Live Demo](https://img.shields.io/badge/live%20demo-open%20app-brightgreen?logo=streamlit)](https://foresight-29xt5kprgtm46lkeelkrpg.streamlit.app/)
+
+> **Live Demo:** [https://foresight-29xt5kprgtm46lkeelkrpg.streamlit.app/](https://foresight-29xt5kprgtm46lkeelkrpg.streamlit.app/)
 
 ---
 
