@@ -193,6 +193,36 @@ def inject_custom_css() -> None:
         .sidebar-meta-item strong {
             color: #E2E8F0;
         }
+
+        /* Sidebar — force dark background and legible text regardless of theme */
+        section[data-testid="stSidebar"] {
+            background-color: #1E293B !important;
+        }
+        section[data-testid="stSidebar"] * {
+            color: #E2E8F0 !important;
+        }
+        section[data-testid="stSidebar"] .sidebar-brand-title {
+            color: #F8FAFC !important;
+        }
+        section[data-testid="stSidebar"] .sidebar-brand-sub {
+            color: #60A5FA !important;
+        }
+        section[data-testid="stSidebar"] .sidebar-meta-item {
+            color: #CBD5E1 !important;
+        }
+        section[data-testid="stSidebar"] .sidebar-meta-item strong {
+            color: #F1F5F9 !important;
+        }
+        /* Streamlit's built-in nav links in sidebar */
+        section[data-testid="stSidebar"] a,
+        section[data-testid="stSidebar"] span,
+        section[data-testid="stSidebar"] p,
+        section[data-testid="stSidebar"] li {
+            color: #CBD5E1 !important;
+        }
+        section[data-testid="stSidebar"] a:hover {
+            color: #F8FAFC !important;
+        }
         </style>
         """,
         unsafe_allow_html=True,

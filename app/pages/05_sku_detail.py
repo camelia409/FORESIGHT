@@ -47,7 +47,7 @@ try:
         load_historical_demand,
         load_forecast_predictions,
     )
-except ModuleNotFoundError:
+except ImportError:
     from styles import (
         inject_custom_css,
         render_page_header,

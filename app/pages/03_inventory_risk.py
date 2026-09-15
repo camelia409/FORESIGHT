@@ -45,7 +45,7 @@ try:
         load_latest_recommendations,
         load_latest_risk_scores,
     )
-except ModuleNotFoundError:
+except ImportError:
     from styles import (
         inject_custom_css,
         render_page_header,

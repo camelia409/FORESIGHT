@@ -42,7 +42,7 @@ try:
     from app.data_loader import (
         load_latest_recommendations,
     )
-except ModuleNotFoundError:
+except ImportError:
     from styles import (
         inject_custom_css,
         render_page_header,

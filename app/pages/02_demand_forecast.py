@@ -47,7 +47,7 @@ try:
         load_model_evaluation_metrics,
         load_model_architecture,
     )
-except ModuleNotFoundError:
+except ImportError:
     from styles import (
         inject_custom_css,
         render_page_header,

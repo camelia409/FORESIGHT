@@ -28,7 +28,7 @@ import streamlit as st
 try:
     from app.styles import inject_custom_css
     from app.data_loader import load_pipeline_manifest
-except ModuleNotFoundError:
+except ImportError:
     from styles import inject_custom_css
     from data_loader import load_pipeline_manifest
 
