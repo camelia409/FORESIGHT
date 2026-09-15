@@ -136,3 +136,23 @@ def load_forecast_predictions() -> pd.DataFrame:
     df_latest = df[df["forecast_origin_date"] == latest_origin].copy()
     hybrid = df_latest[df_latest["model"].str.startswith("Selected Hybrid")].copy()
     return hybrid
+
+
+@st.cache_data(ttl=3600)
+def load_model_evaluation_metrics() -> pd.DataFrame:
+    """Load backtest model evaluation metrics across horizons."""
+    path = PROJECT_ROOT / "artifacts" / "models" / "final" / "final_by_horizon.csv"
+    if not path.is_file():
+        return pd.DataFrame()
+    return pd.read_csv(path)
+
+
+@st.cache_data(ttl=3600)
+def load_model_architecture() -> Dict[str, Any]:
+    """Load validated production model architecture definition."""
+    path = PROJECT_ROOT / "artifacts" / "models" / "final" / "architecture.json"
+    if not path.is_file():
+        return {}
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+

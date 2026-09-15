@@ -1,85 +1,99 @@
-# PROJECT FORESIGHT — AI-Powered Demand & Inventory Intelligence Platform
+# FORESIGHT — AI-Driven Demand Forecasting & Inventory Optimization Platform
 
 [![Build & Test Status](https://img.shields.io/badge/tests-257%20passed%2C%2010%20skipped-brightgreen)](tests/)
 [![Python Version](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue)](requirements.txt)
-[![Production Status](https://img.shields.io/badge/governance-RATIFIED-success)](reports/governance/phase5_policy_ratification_record.md)
-[![Submission Status](https://img.shields.io/badge/submission-READY-success)](reports/final_submission_status.md)
+[![Governance Status](https://img.shields.io/badge/governance-RATIFIED-success)](reports/governance/phase5_policy_ratification_record.md)
+[![Production Universe](https://img.shields.io/badge/production%20universe-50%20SKUs%20(150%20Quarantined)-informational)](data/raw/sku_master.csv)
+[![Deployment](https://img.shields.io/badge/deployment-STREAMLIT%20CLOUD%20%2B%20FASTAPI-blueviolet)](app/streamlit_app.py)
 
 ---
 
-## 1. Project Overview & Purpose
+## 1. Executive Summary & Project Overview
 
-**Project FORESIGHT** is a production-grade, end-to-end Machine Learning and Inventory Intelligence decision support system designed for NorthBay Living in partnership with Zidio Development.
+**Project FORESIGHT** is an enterprise-grade demand forecasting and inventory decision-support platform engineered for retail inventory management. The platform unites machine learning predictive modeling with deterministic inventory theory to convert historical transaction logs, catalog hierarchies, supplier lead times, and retail calendar events into operational purchase directives.
 
-The platform ingests multi-year transaction, inventory, catalog, and retail calendar extracts to:
-1. **Forecast weekly SKU-level demand** across an 8-week planning horizon ($h=1..8$), outperforming seasonal-naive benchmarks by over 18 percentage points in WAPE.
-2. **Quantify forward inventory risks** (stockout risk, overstock surplus, days/weeks of supply).
-3. **Generate prioritized operational directives** ($P1$ Critical Expedite through $P5$ Healthy) for procurement and warehouse planners.
-4. **Enforce enterprise data governance invariants**, ensuring no synthetic assumptions, proxy financial numbers, or unverified orphan SKUs leak into automated purchase recommendations.
+The platform executes an automated end-to-end intelligence loop:
+1. **Multi-Horizon Demand Modeling:** Generates 8-week forward SKU-level forecasts ($h=1..8$) utilizing a horizon-segmented hybrid architecture (Tuned Random Forest for $h=1$, Tuned XGBoost for $h=2$, and 52-week Seasonal Naive for $h=3..8$).
+2. **Deterministic Risk Assessment:** Evaluates forward supply coverage, stockout probabilities, buffer breach timing, and excess inventory across the 8-week horizon.
+3. **Prescriptive Action Directives:** Emits priority-ranked operational instructions ($P1$ Critical Expedite through $P5$ Healthy Scheduled) with auditable root-cause justification.
+4. **Enterprise Governance Compliance:** Enforces strict data invariants, including formal exclusion of unverified monetary valuations (Decision #1, Option 1D), supplier lead-time-based on-order accounting (Decision #2, Option 2A), and an 8-week ratified overstock boundary (Decision #3, Option 3C).
 
 ---
 
-## 2. Business Problem
+## 2. Business Problem & Operational Objectives
 
-Modern multi-channel retail operations face two asymmetric, balance-sheet-eroding failure modes:
+Retail supply chains face twin operational failure modes that directly erode working capital and customer retention:
 
-| Failure Mode | Operational Mechanism | Business & Financial Impact |
+| Operational Failure Mode | Root Mechanism | Financial & Operational Impact |
 | :--- | :--- | :--- |
-| **Stockout Risk** | Depleted safety stock, supplier lead time delays, demand surges | Lost gross revenue, missed customer SLA, churn to competitors |
-| **Overstock Surplus** | Inaccurate macro forecasts, minimum order batching, dead-stock accumulation | Working capital lockup, elevated carrying costs (15–25%/yr), margin-destroying write-downs |
+| **Imminent Stockouts** | Inadequate safety stock, supplier lead time variance, demand velocity spikes | Lost gross margin, fulfillment SLA penalties, customer churn |
+| **Excess / Overstock Surplus** | Inaccurate macro forecasts, bulk batch ordering, dead-stock accumulation | Working capital lockup, elevated carrying costs (15–25%/yr), margin-destroying liquidations |
 
-Traditional planning approaches rely on static spreadsheet rules (e.g., blanket 30-day min/max rules) that fail to capture promotional lift, seasonality, lead-time variance, and demand velocity shifts. FORESIGHT replaces these heuristics with an auditable, automated intelligence loop.
+Traditional inventory planning relies on static spreadsheet heuristics (e.g., blanket 30-day min/max rules) that cannot capture seasonality, promotional lifts, or non-linear stock depletion. FORESIGHT replaces static rules with an auditable, multi-horizon analytics platform.
+
+### Core Objectives
+- **Forecast Accuracy:** Outperform seasonal-naive baselines across the planning horizon.
+- **Stockout Prevention:** Identify buffer breaches at least one lead-time cycle in advance.
+- **Capital Protection:** Freeze replenishment on SKUs holding surplus coverage exceeding 8 weeks.
+- **Operational Clarity:** Deliver deterministic action directives to buyers and inventory controllers without black-box opacity.
 
 ---
 
-## 3. End-to-End System Architecture & Data Flow
+## 3. Core System Capabilities
+
+- **Leakage-Safe Feature Pipeline:** Strict temporal cutoff guarantees no future transaction data informs historical training windows.
+- **Segmented Hybrid ML Architecture:** Optimized model selection per forecast horizon based on empirical backtest validation.
+- **Buffer & Coverage Analytics:** Dynamic weeks-of-supply tracking, safety stock calibration, and reorder point determination.
+- **Prioritized Action Queue:** Strict five-tier operational hierarchy ($P1$ Critical to $P5$ Healthy).
+- **Interactive Multi-Module Dashboard:** Five purpose-built Streamlit modules delivering role-specific visibility without repetitive content.
+- **Production REST API:** High-throughput FastAPI service for real-time and batch SKU inference.
+
+---
+
+## 4. End-to-End System Architecture
 
 ```mermaid
 flowchart TD
-    subgraph S1["1. Raw Data Layer"]
+    subgraph S1["1. Ingestion Layer"]
         R1["data/raw/sales_daily.csv"]
         R2["data/raw/sku_master.csv"]
         R3["data/raw/calendar.csv"]
         R4["data/raw/inventory_snapshots.csv"]
     end
 
-    subgraph S2["2. Preprocessing & Validation"]
+    subgraph S2["2. Data Hygiene & Validation"]
         P1["src/preprocessing.py"]
         P2["50 Production SKUs (SKU001–SKU050)"]
-        P3["150 Orphan SKUs Quarantined"]
+        P3["150 Orphan SKUs Quarantined (SKU051–SKU200)"]
         P4["data/processed/analysis_ready.parquet"]
     end
 
-    subgraph S3["3. Production Forecasting"]
-        F1["src/features.py (Strict Origin Cutoff)"]
-        F2["Horizon h=1: Random Forest (WAPE 13.91%)"]
-        F3["Horizons h=2..8: Tuned XGBoost (WAPE 15.65%–19.34%)"]
-        F4["Benchmark: 52w Seasonal Naive (WAPE 32.10%)"]
+    subgraph S3["3. Forecasting Intelligence"]
+        F1["src/features.py (Lag, Rolling, Calendar)"]
+        F2["Horizon h=1: Tuned Random Forest (WAPE 9.50%)"]
+        F3["Horizon h=2: Tuned XGBoost (WAPE 9.87%)"]
+        F4["Horizons h=3..8: Seasonal Naive 52w (WAPE 10.66%–10.99%)"]
     end
 
-    subgraph S4["4. Inventory Position Calculation"]
-        IP1["On-Hand + On-Order Policy B_LT"]
-        IP2["Verified Supplier Lead Time Accounting"]
+    subgraph S4["4. Inventory Position & Risk Engine"]
+        IP1["On-Hand + Inbound On-Order (Policy B_LT)"]
+        IP2["src/risk_engine.py"]
+        IP3["Weeks of Cover & Days of Supply"]
+        IP4["Stockout Scores & Breach Horizon Timing"]
     end
 
-    subgraph S5["5. Risk Scoring Engine"]
-        RS1["src/risk_engine.py"]
-        RS2["Days & Weeks of Supply"]
-        RS3["Multi-Class Stockout & Overstock Scoring"]
-    end
-
-    subgraph S6["6. Decision Support Engine"]
+    subgraph S5["5. Prescriptive Decision Support"]
         DS1["src/decision_support.py"]
-        DS2["Action Tiers: P1 Critical to P5 Healthy"]
+        DS2["Action Tiers: P1 Expedite to P5 Maintain"]
         DS3["Overstock Threshold: N = 8 Weeks Ratified"]
     end
 
-    subgraph S7["7. Governance Filter"]
-        GF1["Option 1D: Monetary Valuation Excluded (Null)"]
-        GF2["Zero Proxy Pricing Allowed"]
+    subgraph S6["6. Enterprise Governance Filter"]
+        GF1["Decision #1 (Option 1D): Monetary Valuation Excluded (Null)"]
+        GF2["Zero Proxy Pricing Invariant"]
     end
 
-    subgraph S8["8. Production Artifacts & Serving"]
+    subgraph S7["7. Serving & Presentation"]
         PA1["artifacts/phase6/"]
         PA2["artifacts/decision_support/"]
         API["FastAPI REST Service (api/main.py :8000)"]
@@ -92,52 +106,125 @@ flowchart TD
     S4 --> S5
     S5 --> S6
     S6 --> S7
-    S7 --> S8
     PA1 --> API
     PA2 --> API
     PA1 --> DASH
     PA2 --> DASH
 ```
 
+---
+
+## 5. Forecasting Architecture & Model Lineage
+
+FORESIGHT utilizes a **Horizon-Segmented Hybrid Architecture** selected via expanding-window temporal cross-validation across 9 historical backtest origins:
+
+| Forecast Horizon | Assigned Model Architecture | Micro WAPE | Macro WAPE | Baseline WAPE | Relative Gain |
+| :---: | :--- | :---: | :---: | :---: | :---: |
+| **Horizon 1 ($h=1$)** | Tuned Random Forest Regressor | **9.50%** | **11.20%** | 10.38% | **+8.5%** |
+| **Horizon 2 ($h=2$)** | Tuned XGBoost Regressor | **9.87%** | **12.01%** | 10.53% | **+6.3%** |
+| **Horizon 3 ($h=3$)** | Seasonal Naive 52w Baseline | **10.66%** | **13.23%** | 10.66% | Parity |
+| **Horizon 4 ($h=4$)** | Seasonal Naive 52w Baseline | **10.68%** | **13.02%** | 10.68% | Parity |
+| **Horizon 5 ($h=5$)** | Seasonal Naive 52w Baseline | **10.59%** | **12.56%** | 10.59% | Parity |
+| **Horizon 6 ($h=6$)** | Seasonal Naive 52w Baseline | **10.99%** | **13.51%** | 10.99% | Parity |
+| **Horizon 7 ($h=7$)** | Seasonal Naive 52w Baseline | **10.92%** | **13.44%** | 10.92% | Parity |
+| **Horizon 8 ($h=8$)** | Seasonal Naive 52w Baseline | **10.91%** | **13.43%** | 10.91% | Parity |
+| **Overall Fleet Mean** | **Selected Hybrid Architecture** | **10.48%** | **12.68%** | **10.67%** | **+1.9%** |
+
+*Evaluation Metric Definitions:*
+- **Micro WAPE:** $\frac{\sum |y - \hat{y}|}{\sum y} \times 100\%$ (Volume-weighted fleet error)
+- **Macro WAPE:** Unweighted average of individual SKU WAPEs
 
 ---
 
-## 4. Production SKU Universe & Governance Invariants
+## 6. Inventory Risk Engine
 
-Project FORESIGHT adheres strictly to executive decisions formally ratified in **Milestone 5.X**:
+The inventory risk engine computes dynamic inventory metrics across the 8-week horizon:
 
-### 1. Production SKU Universe
-- **Production SKUs (50 SKUs):** `SKU001` through `SKU050`. These SKUs have complete referential integrity across sales transactions, catalog master metadata, and inventory snapshots.
-- **Orphan SKUs (150 SKUs):** `SKU051` through `SKU200`. Present only in `inventory_snapshots.csv` with zero catalog or sales history.
-- **Quarantine Policy:** All 150 orphan SKUs are strictly quarantined from the production forecasting and decision pipeline. API requests for orphan SKUs return HTTP 404 with structured quarantine notices.
-
-### 2. Ratified Governance Decisions
-
-| Governance Gate | Ratified Decision | Operational Implementation |
-| :--- | :--- | :--- |
-| **Decision #1: Valuation Basis** | **Option 1D — Explicit Exclusion of Monetary Valuation** | Forensic data analysis revealed `Inventory_Value` was inconsistent with `Cost_Price` and `Selling_Price`. All monetary metrics (`inventory_value_at_risk`, `excess_inventory_value`, `capital_at_risk`) are explicitly set to `null`. No arbitrary proxy valuation is permitted. |
-| **Decision #2: On-Order Arrival** | **Option 2A — Policy $B_{LT}$** | The dataset contains lump-sum `On_Order` quantities with no PO delivery schedules. Under Policy $B_{LT}$, pending orders are credited toward inventory position only for horizons within supplier lead time. No synthetic delivery dates are fabricated. |
-| **Decision #3: Overstock Threshold** | **Option 3C — $N = 8$ Weeks** | Overstock surplus triggers strictly when forward coverage exceeds 8 weeks of forecast demand (`overstock_threshold_status = "POLICY_RATIFIED"`). |
+1. **Inventory Position ($IP_h$):**
+   $$IP_h = \text{On-Hand} + \sum_{i \le h} \text{Inbound}_i - \sum_{i \le h} \hat{D}_i$$
+   Under **Policy $B_{LT}$**, inbound orders are credited based on verified supplier lead times without fabricating synthetic purchase order delivery dates.
+2. **Weeks of Supply Coverage ($WoC$):**
+   $$WoC = \frac{\text{Current Stock}}{\text{Mean Weekly Forecast Demand}}$$
+3. **Safety Stock ($SS$) & Reorder Point ($RP$):**
+   $$SS = z \times \sigma_L \times \sqrt{L}, \quad RP = (\hat{D}_{\text{weekly}} \times L) + SS$$
+   where $L$ represents lead time in weeks and $z=1.65$ represents a 95% service level.
+4. **Stockout Risk Scoring:** Normalizes multi-factor deficit depth, lead-time vulnerability, and earliest breach horizon into a composite score ($0–100$).
 
 ---
 
-## 5. Model Performance & Backtesting Results
+## 7. Decision Support & Action Center
 
-FORESIGHT utilizes a specialized multi-model architecture evaluated across 12 rolling-origin cross-validation folds (52-week minimum training history, 1-week step):
+Replenishment directives are classified into five strict operational priority tiers:
 
-| Forecast Horizon | Best Model | Horizon WAPE | Baseline WAPE | Absolute Gain | Relative Improvement |
-| :---: | :---: | :---: | :---: | :---: | :---: |
-| **Week 1 ($h=1$)** | Random Forest Regressor | **13.91%** | 32.10% | **+18.19%** | **56.7%** |
-| **Week 2 ($h=2$)** | XGBoost Regressor | **15.65%** | 32.10% | **+16.45%** | **51.2%** |
-| **Week 3 ($h=3$)** | XGBoost Regressor | **16.82%** | 32.10% | **+15.28%** | **47.6%** |
-| **Week 4 ($h=4$)** | XGBoost Regressor | **17.41%** | 32.10% | **+14.69%** | **45.8%** |
-| **Week 8 ($h=8$)** | XGBoost Regressor | **19.34%** | 32.10% | **+12.76%** | **39.8%** |
-
-*Weighted Absolute Percentage Error (WAPE):* $\frac{\sum |y - \hat{y}|}{\sum y} \times 100\%$
+| Priority Rank | Action Code | Operational Directive | Trigger Criteria |
+| :---: | :--- | :--- | :--- |
+| **P1** | `EXPEDITE_PO` | Immediate supplier contact to accelerate existing inbound order | Imminent stockout projected before standard lead-time arrival |
+| **P2** | `PLACE_PO` | Issue new replenishment purchase order | Inventory position below Reorder Point ($IP < RP$) |
+| **P3** | `REVIEW_PIPELINE` | Review purchase order delivery timing with vendor | Inbound shipment scheduled to arrive after projected buffer breach |
+| **P4** | `FREEZE_REPLENISHMENT` | Halt all replenishment orders to protect working capital | Supply coverage exceeds 8 weeks ($WoC > 8.0w$) |
+| **P5** | `MAINTAIN_SCHEDULE` | Maintain standard replenishment and review cycle | Inventory position balanced within optimal buffer band |
 
 ---
 
-## 6. Project Structure
+## 8. Dashboard Modules
+
+The user interface is structured into five distinct, specialized modules built with Vanilla CSS enterprise tokens, clean typography (Inter / JetBrains Mono), and **zero emojis**:
+
+```
+app/
+├── streamlit_app.py        # Central navigation controller & enterprise sidebar
+├── styles.py               # Enterprise design system & Plotly theme
+├── data_loader.py          # Cached data connector layer
+└── pages/
+    ├── 01_executive_overview.py  # Strategic situation awareness & fleet posture
+    ├── 02_demand_forecast.py     # Forecasting intelligence & backtest benchmarks
+    ├── 03_inventory_risk.py      # 2D risk matrix & lead-time vulnerability
+    ├── 04_action_center.py       # Operational action queues & inspector drawer
+    └── 05_sku_detail.py          # 360-degree SKU dossier & IP simulation
+```
+
+### Module Responsibilities
+
+1. **Executive Overview (`01_executive_overview.py`):**
+   - *Audience:* Executive leadership, VP Supply Chain, Head of Finance.
+   - *Content:* High-level KPI tiles, fleet risk distribution donut chart, category inventory posture table, top 3 executive priority callouts.
+   - *Non-Repetition Boundary:* Does not contain granular SKU tables or purchase order worklists.
+
+2. **Demand Forecast (`02_demand_forecast.py`):**
+   - *Audience:* Demand planners, ML engineers, merchandise planners.
+   - *Content:* Production model backtest scorecard ($h=1..8$ WAPE, MAE, RMSE), interactive 52-week historical actuals + 8-week forward forecast trajectory with ML model markers ($h=1$ RF, $h=2$ XGB), horizon schedule table, category forward demand volume.
+   - *Non-Repetition Boundary:* Contains zero risk scores and zero reorder directives.
+
+3. **Inventory Risk (`03_inventory_risk.py`):**
+   - *Audience:* Risk analysts, inventory controllers.
+   - *Content:* Fleet risk scorecard, 2D Enterprise Risk Matrix (Stockout Score vs Weeks of Cover with $<2w$ shortage and $>8w$ surplus boundaries), Lead Time vs Coverage vulnerability scatter, breach horizon timing distribution, fleet risk assessment roster.
+   - *Non-Repetition Boundary:* Purely analytical; contains no purchase order directives.
+
+4. **Action Center (`04_action_center.py`):**
+   - *Audience:* Procurement buyers, purchasing agents.
+   - *Content:* Operational action summary cards, priority workflow selector ($P1$ Critical to $P5$ Maintained), department and action code filters, operational worklist table, CSV export, Action Inspector Drawer with prescriptive directives, root-cause rationale, and follow-up protocols.
+   - *Non-Repetition Boundary:* Contains no risk scatter plots or raw historical demand charts.
+
+5. **SKU Detail (`05_sku_detail.py`):**
+   - *Audience:* Operational planners conducting single-item investigation.
+   - *Content:* Single-SKU focus selector, catalog master attributes, current buffer parameters (On-Hand, On-Order, Safety Stock, Reorder Point, Weeks of Supply), 8-week forward Inventory Position (IP) simulation chart against Safety Stock and Zero boundaries, prescriptive directive card, and governance audit record.
+   - *Non-Repetition Boundary:* Single-SKU dossier; contains no fleet-wide tables.
+
+---
+
+## 9. Technology Stack
+
+- **Core Runtime:** Python 3.11 / 3.12 / 3.13
+- **Data Engineering:** Pandas, NumPy, PyArrow, Parquet
+- **Machine Learning:** Scikit-Learn (Random Forest), XGBoost, Joblib
+- **API Serving:** FastAPI, Pydantic V2, Uvicorn, Starlette
+- **Interactive Dashboard:** Streamlit (v1.31+ programmatic `st.navigation`), Plotly Express / Graph Objects
+- **Styling:** Custom Vanilla CSS (Dark Slate Theme: `#0F172A`, `#1E293B`, `#F8FAFC`), Google Fonts (Inter, JetBrains Mono)
+- **Quality Assurance:** Pytest, HTTPX, Coverage
+
+---
+
+## 10. Repository Directory Structure
 
 ```
 foresight/
@@ -145,19 +232,20 @@ foresight/
 │   ├── inference.py            # Real-time and batch scoring handlers
 │   ├── main.py                 # FastAPI application and endpoint routing
 │   └── schemas.py              # Pydantic V2 request & response schemas
-├── app/                        # Interactive Operations Dashboard
-│   ├── data_loader.py          # Cached data connector and risk calculations
-│   ├── streamlit_app.py        # Streamlit multipage application entrypoint
-│   └── pages/                  # Specialized dashboard views
+├── app/                        # Streamlit Enterprise Dashboard
+│   ├── data_loader.py          # Cached data access layer
+│   ├── streamlit_app.py        # Application entrypoint & navigation controller
+│   ├── styles.py               # Enterprise design system & Plotly layouts
+│   └── pages/                  # Specialized dashboard modules
 │       ├── 01_executive_overview.py
 │       ├── 02_demand_forecast.py
 │       ├── 03_inventory_risk.py
 │       ├── 04_action_center.py
 │       └── 05_sku_detail.py
-├── artifacts/                  # Production pipeline outputs & governance logs
+├── artifacts/                  # Production pipeline outputs & governance records
 │   ├── decision_support/       # Recommendations parquet, latest snapshots, summary JSON
-│   ├── governance/             # Policy ratification records and executive packages
-│   ├── models/                 # Model evaluation metrics and tuning histories
+│   ├── governance/             # Ratification records and executive packages
+│   ├── models/                 # Backtest evaluations, final predictions, architecture specs
 │   ├── phase6/                 # Production pipeline manifests and latest parquets
 │   └── risk/                   # Risk scores panels and latest snapshots
 ├── configs/                    # Configuration management
@@ -165,55 +253,49 @@ foresight/
 ├── data/                       # Datasets
 │   ├── raw/                    # Protected immutable raw CSV extracts
 │   └── processed/              # Analysis-ready curated parquet dataset
-├── models/                     # Trained production model binaries
+├── models/                     # Production model binaries
 │   └── production/models/      # random_forest_h1.joblib, xgboost_h2.joblib
 ├── notebooks/                  # Milestone exploratory and audit notebooks (01-08)
 ├── reports/                    # Complete phase reports, audits, and runbooks
-│   ├── data_quality/           # Ingestion and data cleaning audit reports
+│   ├── data_quality/           # Data hygiene and schema audits
 │   ├── decision_support/       # Recommendation engine reports
-│   ├── executive/              # Executive readout memo for Head of Ops & Finance
+│   ├── executive/              # Executive readout memos
 │   ├── governance/             # Ratification records and decision packages
-│   ├── models/                 # Final model selection and tuning reports
-│   ├── phase6/                 # Operational acceptance and API contracts
-│   ├── final_cleanup_manifest.md
-│   ├── final_deployment_runbook.md
-│   ├── final_submission_requirements_audit.md
-│   └── final_submission_status.md
+│   ├── models/                 # Model evaluation and tuning reports
+│   └── phase6/                 # Operational acceptance and deployment contracts
 ├── scripts/                    # Platform execution runners (.bat and .sh)
 │   ├── run_api.bat / .sh
 │   ├── run_dashboard.bat / .sh
 │   └── run_pipeline.bat / .sh
 ├── src/                        # Core Python intelligence modules
 │   ├── decision_support.py     # Action tier classification & recommendations
-│   ├── evaluate.py             # Metric calculations (WAPE, MAPE, RMSE, Coverage)
+│   ├── evaluate.py             # Metric calculations (WAPE, MAE, RMSE)
 │   ├── features.py             # Leakage-safe feature extraction
 │   ├── models.py               # ML model wrappers & multi-horizon inference
-│   ├── preprocessing.py        # Pipeline ingestion & data hygiene
+│   ├── preprocessing.py        # Ingestion, validation & data hygiene
 │   ├── production_pipeline.py  # End-to-end DAG execution engine
 │   └── risk_engine.py          # Inventory position & risk scoring formulas
 ├── tests/                      # Automated regression test suite (257 tests)
-├── .dockerignore               # Container build exclusions
 ├── .env.example                # Environment variable configuration template
 ├── .gitignore                  # Git repository exclusion rules
-├── docker-compose.yml          # Container orchestration configuration
-├── Dockerfile                  # Production container definition
-├── README.md                   # Authoritative project overview
+├── README.md                   # Authoritative project documentation
 └── requirements.txt            # Pinned runtime dependencies
 ```
 
 ---
 
-## 7. How to Run Locally
+## 11. Local Setup & Execution Guide
 
 ### Prerequisites
 - Python 3.11, 3.12, or 3.13
 - Git
 
-### Quick Setup
+### Installation
 
 ```bash
-# 1. Clone repository and navigate to root
-cd foresight
+# 1. Clone repository
+git clone https://github.com/camelia409/FORESIGHT.git
+cd FORESIGHT
 
 # 2. Create and activate virtual environment
 python -m venv .venv
@@ -225,102 +307,177 @@ python -m venv .venv
 # 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Configure environment
+# 4. Initialize environment configuration
 copy .env.example .env
 ```
 
-### Running the Components
+### Running the Services
 
 #### 1. Execute Production Pipeline DAG
-Runs ingestion, feature engineering, multi-horizon inference, risk scoring, and recommendation generation:
+Executes ingestion, feature generation, ML inference, risk scoring, and recommendation output:
 ```bash
-# Using Python directly:
 python -m src.production_pipeline --origin 2025-09-16
-
-# Or using runner scripts:
-# Windows: scripts\run_pipeline.bat
-# Linux:   bash scripts/run_pipeline.sh
 ```
 
-#### 2. Launch Scoring REST API
-Starts FastAPI service on port 8000:
+#### 2. Launch FastAPI Scoring Service
+Starts REST service on port 8000:
 ```bash
-# Using Uvicorn directly:
 uvicorn api.main:app --host 0.0.0.0 --port 8000
-
-# Or using runner scripts:
-# Windows: scripts\run_api.bat
-# Linux:   bash scripts/run_api.sh
 ```
 - Interactive API Docs (Swagger UI): `http://localhost:8000/docs`
-- Health Check: `http://localhost:8000/health`
+- Health Endpoint: `http://localhost:8000/health`
 
-#### 3. Launch Planning Dashboard
-Starts Streamlit interactive application on port 8501:
+#### 3. Launch Interactive Planning Dashboard
+Starts Streamlit application on port 8501:
 ```bash
-# Using Streamlit directly:
 streamlit run app/streamlit_app.py --server.port 8501
-
-# Or using runner scripts:
-# Windows: scripts\run_dashboard.bat
-# Linux:   bash scripts/run_dashboard.sh
 ```
-- Dashboard Access: `http://localhost:8501`
+- Dashboard URL: `http://localhost:8501`
 
 ---
 
-## 8. Automated Test Suite
+## 12. Deployment Guide
 
-Project FORESIGHT includes a rigorous automated test suite covering unit functionality, data validation, temporal leakage prevention, model scoring, risk calculations, governance invariants, API contracts, and dashboard data loaders.
+### Option A: Streamlit Community Cloud (Interactive Dashboard)
+1. Repository: `https://github.com/camelia409/FORESIGHT`
+2. Main file path: `app/streamlit_app.py`
+3. Branch: `main`
+4. Python version: 3.11+
+5. Automatic path resolution: Handled via `app/__init__.py` and explicit project root resolution in `app/streamlit_app.py`.
 
-Run the full test suite:
+### Option B: Cloud Container / REST API (Render, Railway, AWS ECS)
+- Build command: `pip install -r requirements.txt`
+- Start command: `uvicorn api.main:app --host 0.0.0.0 --port $PORT`
+- Health check path: `/health`
+
+---
+
+## 13. Quality Assurance & Regression Testing
+
+The test suite enforces rigorous regression boundaries across all modules:
+
 ```bash
 python -m pytest tests/ -v
 ```
 
-**Verified Test Baseline:**
-- **257 passed**, 10 skipped (optional network/slow benchmarks), **0 failed**
-- Execution time: ~21 seconds
+### Test Results Baseline
+- **257 passed**, 10 skipped, **0 failed**
+- 100% pass rate across core test suites:
+  - `test_preprocessing.py`: Ingestion, schema validation, quarantine enforcement
+  - `test_baseline.py`: Naive baseline comparisons and metric correctness
+  - `test_features.py`: Temporal leakage prevention and rolling statistics
+  - `test_forecasting.py`: ML model fitting, cross-validation, WAPE calculations
+  - `test_risk_engine.py`: Inventory formulas, Policy $B_{LT}$, overstock boundaries
+  - `test_decision_support.py`: Priority tier assignment, recommendation codes
+  - `test_phase6_production.py`: REST API endpoints, health checks, schemas
+
+### Protected Production Artifacts (SHA-256 Verified)
+All 11 production baseline artifacts remain strictly immutable and bitwise identical:
+
+| Artifact Path | SHA-256 Digest | Status |
+| :--- | :--- | :---: |
+| `data/raw/inventory_snapshots.csv` | `167582d50ac68b4751f481efef136e4199528f7de3fe63b80d29d4768fd5e9bd` | Verified |
+| `data/raw/sku_master.csv` | `6a8653e898a56cc596a4a70739ddcdd9ae80a2f997d24bf93ed110f1950582a9` | Verified |
+| `data/processed/analysis_ready.parquet` | `f5d2ccf83e18c06a74caf072dc1bd7ae914cb42bc2af6818296f7ae937e59427` | Verified |
+| `models/production/models/random_forest_h1.joblib` | `3c04dcbd4536433c9634c2a579a3def60ef34364d08d049c18e080349f3883d3` | Verified |
+| `models/production/models/xgboost_h2.joblib` | `3f07ba07ad12d05a79f4f029657f6b35704e991975f040a272534196367f461a` | Verified |
+| `artifacts/risk/risk_scores_panel.parquet` | `a26f35b6b0dc258aa61b543ec7c1e6be50549ffe9709686f2435f413ac2df37c` | Verified |
+| `artifacts/risk/risk_scores_latest.parquet` | `bea7bb276827edf7c736d36160f4f1667c797f4e11b37ab355d1d2123b30bb35` | Verified |
+| `artifacts/risk/risk_latest.json` | `553e3e8e2ef6c07ceb883f0dc16bed56284b4581deff28cd42a3bc2f8e20acee` | Verified |
+| `artifacts/decision_support/recommendations_panel.parquet` | `54f79753f8eed709ec314c2b824e934f6beaf1507334c9b9cc874dd52739db5b` | Verified |
+| `artifacts/decision_support/recommendations_latest.parquet` | `5a892034571402419b9f49dc563b47211dbb44744735ea13b30961059f7c346b` | Verified |
+| `artifacts/decision_support/recommendation_summary.json` | `f57d55e3842c8081a0eec6c4eccec95fc10485118ee4264bd8dfb14053075ae9` | Verified |
 
 ---
 
-## 9. Deployment Guide
+## 14. Data Assumptions & Ratified Governance Invariants
 
-FORESIGHT is configured for rapid, container-free cloud deployment across standard platforms:
+Project FORESIGHT operates under formal policies ratified during Milestone 5.X:
 
-### Option A: Interactive Dashboard (Streamlit Community Cloud)
-1. Fork/push repository to GitHub.
-2. Log in to [share.streamlit.io](https://share.streamlit.io).
-3. Connect repository:
-   - **Main file path:** `app/streamlit_app.py`
-   - **Python version:** 3.11+
-4. Click **Deploy**.
-
-### Option B: Scoring REST API (Render / Railway)
-1. Connect repository on [render.com](https://render.com).
-2. Create **Web Service**:
-   - **Environment:** Python
-   - **Build Command:** `pip install -r requirements.txt`
-   - **Start Command:** `uvicorn api.main:app --host 0.0.0.0 --port $PORT`
-   - **Health Check Path:** `/health`
-3. Click **Create Web Service**.
-
-> Complete deployment specifications, environment parameters, and smoke test commands are detailed in [`reports/final_deployment_runbook.md`](reports/final_deployment_runbook.md).
+1. **Production SKU Universe (50 SKUs):**
+   - Active universe comprises `SKU001` through `SKU050`, with full referential integrity across sales transactions, catalog metadata, and inventory snapshots.
+   - 150 orphan SKUs (`SKU051` through `SKU200`) present only in inventory snapshots remain strictly quarantined until authoritative master data is supplied.
+2. **Decision #1 — Valuation Basis (Option 1D):**
+   - Forensic analysis demonstrated that `Inventory_Value` was mathematically inconsistent with unit cost and price attributes.
+   - Monetary valuation metrics (`inventory_value_at_risk`, `excess_inventory_value`, `capital_at_risk`) are explicitly excluded and returned as `null`. No proxy numbers are used. Operations remain 100% unit-based.
+3. **Decision #2 — On-Order Arrival Accounting (Option 2A):**
+   - Pending purchase orders arrive according to supplier lead times (**Policy $B_{LT}$**). No synthetic delivery dates are fabricated.
+4. **Decision #3 — Overstock Boundary (Option 3C):**
+   - Overstock surplus is formally defined as forward inventory coverage exceeding $N = 8$ weeks (`overstock_threshold_status = "POLICY_RATIFIED"`).
 
 ---
 
-## 10. Known Limitations & Transparency Notes
+## 15. Known Technical Limitations
 
-1. **Orphan SKU Limitation:** 150 SKUs (`SKU051`–`SKU200`) present in inventory snapshots lack sales history and catalog attributes. They remain strictly quarantined until the client provides authoritative master data.
-2. **Monetary Valuation Basis:** Per ratified Executive Decision #1, monetary risk metrics are suppressed (`null`). Once NorthBay Living establishes an authoritative ERP Standard Cost or WAC feed, monetary valuation can be unlocked via configuration.
-3. **Static Catalog Prices:** Promotional lift and price elasticity modeling are currently based on static catalog prices. Dynamic competitor pricing feeds are earmarked for future iterations.
+1. **Static Catalog Prices:** Promotional demand elasticity is derived from static catalog price points. Real-time promotional price changes are not yet integrated.
+2. **Quarantined SKU Portfolio:** 150 orphan SKUs lack transactional history and cannot receive ML forecasts until catalog onboarding occurs.
+3. **Monetary Valuation Exclusion:** Unit-based decision support prevents capital commitment misallocation, but enterprise working capital reporting requires an authoritative ERP Standard Cost feed.
 
 ---
 
-## 11. Project Status & Sign-Off
+## 16. Requirements Completion Matrix
 
-- **Contractual Deliverables (D1–D7):** 100% Complete & Audited
-- **Governance Status:** Ratified by NorthBay Living Leadership (Record: `phase5_policy_ratification_record.md`)
-- **Test Integrity:** 257 Passed, 0 Failed
-- **Protected Baseline Artifacts:** 11/11 Bitwise Identical (SHA-256 Verified)
-- **Final Status:** **SUBMISSION READY WITH ONE MANUAL DEPLOYMENT STEP** (Student Portal Submission / Demo Video Recording)
+| Requirement Area | Status | Implementation & Verification Evidence |
+| :--- | :---: | :--- |
+| **Data Ingestion & Hygiene** | **Complete** | Automated validation, schema checks, referential integrity verification (`src/preprocessing.py`, `tests/test_preprocessing.py`). |
+| **Orphan SKU Quarantine** | **Complete** | Strict quarantine of 150 unreferenced SKUs; HTTP 404 response in API (`src/preprocessing.py`, `api/main.py`). |
+| **Multi-Horizon Demand Forecasting** | **Complete** | 8-week forward forecasts via Horizon-Segmented Hybrid (RF $h=1$, XGB $h=2$, Seasonal Naive $h=3..8$) (`src/models.py`). |
+| **Model Validation & Evaluation** | **Complete** | 9-origin rolling cross-validation; empirical WAPE benchmarks (`artifacts/models/final/final_by_horizon.csv`). |
+| **Inventory Risk Scoring** | **Complete** | Stockout scores, weeks of supply, safety stock, reorder point, Policy $B_{LT}$ (`src/risk_engine.py`). |
+| **Prescriptive Action Center** | **Complete** | Five priority tiers ($P1$ to $P5$), action codes, root-cause rationale, follow-up protocols (`src/decision_support.py`). |
+| **Governance Compliance** | **Complete** | Decisions #1 (1D), #2 (2A), #3 (3C) verified and preserved in code and artifacts (`reports/governance/`). |
+| **Interactive Executive Dashboard** | **Complete** | Five distinct modules, zero emojis, dark enterprise design system, programmatic navigation (`app/`). |
+| **Production REST API** | **Complete** | FastAPI service with `/health`, `/predict/forecast`, `/inventory/risk`, `/inventory/recommendations` (`api/main.py`). |
+| **Automated Test Coverage** | **Complete** | 257 tests passing, 0 failures, 11 protected artifacts preserved (`tests/`). |
+| **ERP Financial Integration** | **Planned** | Direct connection to ERP standard cost feeds for monetary valuation (contingent on client ERP access). |
+| **Real-Time Automated Ingestion** | **Planned** | Event-driven webhook or Kafka ingestion for intraday warehouse balance updates. |
+
+---
+
+## 17. Future Development / Roadmap
+
+To maintain engineering transparency, system capabilities are explicitly partitioned into the **Current Production Baseline** and **Future Development Initiatives**:
+
+```mermaid
+timeline
+    title FORESIGHT Platform Evolution Roadmap
+    section Current Baseline (v1.0.0)
+        Validated Hybrid Forecasting : Random Forest h=1, XGBoost h=2, Seasonal Naive h=3..8
+        Deterministic Risk Scoring   : Weeks of Cover, Stockout Scores, Policy B_LT
+        Operational Action Center    : Priority Tiers P1 to P5 with execution protocols
+        Multipage SaaS Dashboard     : 5 distinct enterprise modules with zero emojis
+        Production REST API          : FastAPI endpoints with Pydantic V2 schemas
+    section Phase 1 Enhancement (v1.1)
+        ERP Standard Cost Sync       : Unlocks Decision #1 monetary valuation
+        Intraday Warehouse Feeds     : Webhook ingestion for live on-hand sync
+        Automated Retraining Trigger : Drift detection on rolling WAPE degradation
+    section Phase 2 Enterprise (v2.0)
+        Purchase Order EDI/API Push  : Direct PO creation in SAP / NetSuite / Dynamics
+        Probabilistic Forecasting    : Conformal prediction bands (p10/p50/p90 intervals)
+        Supplier Scorecarding        : Dynamic lead-time distributions from actual receipts
+        Multi-Echelon Optimization   : Distribution center to retail store replenishment
+```
+
+### Current Production Baseline (v1.0.0) — *Implemented & Verified*
+- 50-SKU production universe with quarantined orphan handling.
+- Horizon-segmented forecasting beating seasonal naive baselines.
+- Multi-horizon inventory risk scoring with lead-time conditional on-order inclusion (Policy $B_{LT}$).
+- Five-tier prioritized action queue ($P1$ Critical to $P5$ Maintained).
+- Five distinct dashboard modules without redundant content or emojis.
+- Automated test suite (257 passing) and SHA-256 verified artifacts.
+
+### Future Development Initiatives — *Roadmap*
+1. **Authoritative ERP Financial Integration (Phase 1 / v1.1):**
+   - Integrate authenticated connection to enterprise ERP (SAP, NetSuite, or Microsoft Dynamics 365) to ingest authoritative Standard Cost and Weighted Average Cost (WAC) data.
+   - Formally transition Decision #1 from Option 1D to Option 1A, enabling monetary metrics (`capital_at_risk`, `excess_inventory_value`).
+2. **Automated Event-Driven Data Ingestion (Phase 1 / v1.1):**
+   - Replace manual batch origin triggers with webhook or message-queue listeners (Apache Kafka / AWS SQS) for real-time inventory ledger updates.
+   - Implement automated data drift monitoring using population stability index (PSI) to trigger automated model retraining.
+3. **Probabilistic & Uncertainty-Aware Forecasting (Phase 2 / v2.0):**
+   - Supplement point predictions with quantile regression / conformal prediction intervals ($p10, p50, p90$) to model demand volatility during extreme promotional events.
+4. **Closed-Loop Purchase Order EDI / ERP Push (Phase 2 / v2.0):**
+   - Allow authorized procurement buyers to approve recommendations directly within Action Center and automatically dispatch electronic POs via EDI 850 or ERP REST APIs.
+5. **Dynamic Supplier Performance & Lead-Time Modeling (Phase 2 / v2.0):**
+   - Replace static supplier lead times with empirical lead-time distributions derived from historical purchase order receipt timestamps.
+6. **Multi-Echelon Network Optimization (Phase 3):**
+   - Expand inventory optimization beyond single-echelon warehouse storage to multi-echelon networks (Central DC $\to$ Regional Hubs $\to$ Retail Stores).
