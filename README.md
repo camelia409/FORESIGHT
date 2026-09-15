@@ -258,7 +258,11 @@ foresight/
 │   └── processed/              # Analysis-ready curated parquet dataset
 ├── models/                     # Production model binaries
 │   └── production/models/      # random_forest_h1.joblib, xgboost_h2.joblib
-├── notebooks/                  # Milestone exploratory and audit notebooks (01-08)
+├── notebooks/                  # Development, analytical & reproducibility notebooks (01-04)
+│   ├── 01_data_preparation.ipynb               # Raw data audit, referential integrity & analysis-ready validation
+│   ├── 02_eda_and_feature_engineering.ipynb     # Demand characterization, intermittency, promotional lift & feature pipeline
+│   ├── 03_model_training_and_backtesting.ipynb  # Baseline benchmarks, walk-forward CV & production hybrid validation
+│   └── 04_forecast_and_risk.ipynb               # 8-week production forecast, Policy B_LT risk engine & decision support
 ├── reports/                    # Complete phase reports, audits, and runbooks
 │   ├── data_quality/           # Data hygiene and schema audits
 │   ├── decision_support/       # Recommendation engine reports
@@ -287,7 +291,60 @@ foresight/
 
 ---
 
-## 11. Local Setup & Execution Guide
+## 11. Analytical & Reproducibility Notebooks
+
+Project FORESIGHT maintains four consolidated, self-contained, and leakage-safe Jupyter notebooks under `notebooks/`. These notebooks serve as the **development, exploratory, diagnostic, and reproducibility layer** for data scientists and auditors.
+
+> **CRITICAL ARCHITECTURAL DISTINCTION**:  
+> The deployed Streamlit dashboard (`app/`) and production FastAPI service (`api/`) **do NOT execute or import Jupyter notebooks at runtime**.  
+> - **Development / Analytical Layer (`notebooks/`)**: Interactive exploratory notebooks for model diagnosis, statistical research, and audit validation.  
+> - **Production Source of Truth (`src/`)**: Stateless Python modules and DAG orchestrators (`src.production_pipeline`) that execute end-to-end data processing, ML inference, and risk scoring.  
+> - **Application Layer (`app/` & `api/`)**: Consumes pre-computed, validated production artifacts (`.parquet`, `.joblib`, `.json`) from `artifacts/`, `models/`, and `data/`.
+
+```
+notebooks/
+├── 01_data_preparation.ipynb               # Ingestion, schema audit, referential integrity & panel verification
+├── 02_eda_and_feature_engineering.ipynb     # Demand characterization, intermittency, promotional lift & feature engineering
+├── 03_model_training_and_backtesting.ipynb  # Baseline benchmarking, rolling-origin CV & production hybrid validation
+└── 04_forecast_and_risk.ipynb               # 8-week production forecasting, Policy B_LT risk scoring & action directives
+```
+
+### Notebook Modules & Analytical Scope
+
+1. **`01_data_preparation.ipynb` — Data Ingestion, Audit & Preparation:**
+   - **Raw Data Ingestion:** Inspects the 4 source CSV datasets (`historical_sales.csv`, `inventory.csv`, `sku_master.csv`, `supplier_lead_time.csv`) in `data/raw/`.
+   - **Schema & Data Quality Validation:** Profiles row counts, column types, null completeness, and temporal continuity.
+   - **Referential Integrity & SKU Partitioning:** Validates the active 50-SKU production universe (`SKU001`–`SKU050`) and enforces quarantine on the 150 orphan SKUs (`SKU051`–`SKU200`) lacking transactional sales history.
+   - **Supplier Lead Time Verification:** Audits supplier lead times to verify all production SKUs have lead times $\le 14$ days, establishing the empirical foundation for Decision #2 (Policy $B_{LT}$).
+   - **Analysis-Ready Panel Verification:** Validates the preprocessed daily demand panel (`data/processed/analysis_ready.parquet`, 36,550 records, complete $50 \times 731$ panel) and cryptographic SHA-256 source immutability.
+
+2. **`02_eda_and_feature_engineering.ipynb` — Exploratory Data Analysis & Leakage-Safe Feature Engineering:**
+   - **Demand Characterization & Distribution:** Analyzes daily and weekly volume distributions, skewness, and zero-demand proportions.
+   - **Syntetos-Boylan Intermittency Classification:** Evaluates Average Demand Interval (ADI) and squared Coefficient of Variation ($CV^2$) to categorize SKUs into Smooth, Intermittent, Erratic, or Lumpy demand profiles.
+   - **Promotional Lift Analysis:** Evaluates demand sensitivity to promotional flags across product categories.
+   - **Temporal Aggregation & SNR Analysis:** Demonstrates that aggregating daily demand to weekly grain ($W\text{-MON}$) doubles the signal-to-noise ratio (from 1.65 to 3.20) while eliminating day-of-week noise.
+   - **Feature Engineering Pipeline:** Constructs lag features (`lag_1` through `lag_52`), multi-window rolling statistics (mean, std, min, max over 4, 8, 12, 26, 52 weeks), and calendar features without lookahead bias.
+   - **Target Formulation & Leakage Invariants:** Builds direct multi-horizon targets (`target_h1` through `target_h8`) and executes automated leakage invariant checks (`validate_feature_leakage`).
+
+3. **`03_model_training_and_backtesting.ipynb` — Baseline Forecasting, Model Training & Backtesting:**
+   - **Weekly Demand Aggregation:** Reconciles volume conservation between daily and weekly demand series.
+   - **Rolling-Origin Walk-Forward Protocol:** Implements strict temporal walk-forward evaluation across 12 rolling origins with a 52-week minimum training window and 8-week forward horizon ($h=1..8$).
+   - **Classical Baselines Evaluation:** Evaluates 5 classical benchmark methods: Naive, Seasonal Naive (lag 52), Moving Average (MA4, MA8), and Simple Exponential Smoothing (SES).
+   - **Supervised ML Candidate Models:** Compares tuned gradient boosting (XGBoost, LightGBM) and ensemble trees (Random Forest) against classical baselines on Volume-Weighted Absolute Percentage Error (WAPE).
+   - **Production Hybrid Architecture Validation:** Validates the ratified production Hybrid model ($h=1$ Random Forest for short-range non-linear dynamics, $h=2$ XGBoost for medium-lead interaction, $h=3..8$ Seasonal Naive for long-range stability).
+   - **Horizon & Category Scorecards:** Evaluates error growth as lead time extends and generates diagnostic visualizations.
+
+4. **`04_forecast_and_risk.ipynb` — Production Forecasting, Inventory Risk Engine & Decision Support:**
+   - **Production Multi-Horizon Forecasting:** Loads and inspects 8-week forward demand predictions generated by the production Hybrid model for the 50 production SKUs.
+   - **Inventory Trajectory Simulation (Policy $B_{LT}$):** Simulates dynamic inventory positions over $h=1..8$ weeks incorporating current on-hand stock and confirmed on-order quantities arriving within lead time ($PO \le 14$ days).
+   - **Stockout & Overstock Risk Scoring:** Evaluates composite stockout vulnerability ($0–100$) and flags excess inventory breaching the ratified 8-week supply boundary (Decision #3, Option 3C).
+   - **Operational Action Directives:** Emits deterministic replenishment directives (`EXPEDITE_PO`, `PLACE_PO`, `REVIEW_PIPELINE`, `FREEZE_REPLENISHMENT`, `MAINTAIN_SCHEDULE`) across priority tiers $P1$ to $P5$.
+   - **Governance Compliance Audit (Decision #1, Option 1D):** Audits artifacts to guarantee zero monetary valuation metrics (`capital_at_risk`, `excess_inventory_value`) are exposed, ensuring operations remain 100% unit-based.
+   - **Pipeline Manifest & Serving Verification:** Inspects `artifacts/phase6/pipeline_manifest.json` and serving readiness.
+
+---
+
+## 12. Local Setup & Execution Guide
 
 ### Prerequisites
 - Python 3.11, 3.12, or 3.13
@@ -339,7 +396,7 @@ streamlit run app/streamlit_app.py --server.port 8501
 
 ---
 
-## 12. Deployment Guide
+## 13. Deployment Guide
 
 ### Option A: Streamlit Community Cloud (Interactive Dashboard)
 1. Repository: `https://github.com/camelia409/FORESIGHT`
@@ -355,7 +412,7 @@ streamlit run app/streamlit_app.py --server.port 8501
 
 ---
 
-## 13. Quality Assurance & Regression Testing
+## 14. Quality Assurance & Regression Testing
 
 The test suite enforces rigorous regression boundaries across all modules:
 
@@ -393,7 +450,7 @@ All 11 production baseline artifacts remain strictly immutable and bitwise ident
 
 ---
 
-## 14. Data Assumptions & Ratified Governance Invariants
+## 15. Data Assumptions & Ratified Governance Invariants
 
 Project FORESIGHT operates under formal policies ratified during Milestone 5.X:
 
@@ -410,7 +467,7 @@ Project FORESIGHT operates under formal policies ratified during Milestone 5.X:
 
 ---
 
-## 15. Known Technical Limitations
+## 16. Known Technical Limitations
 
 1. **Static Catalog Prices:** Promotional demand elasticity is derived from static catalog price points. Real-time promotional price changes are not yet integrated.
 2. **Quarantined SKU Portfolio:** 150 orphan SKUs lack transactional history and cannot receive ML forecasts until catalog onboarding occurs.
@@ -418,7 +475,7 @@ Project FORESIGHT operates under formal policies ratified during Milestone 5.X:
 
 ---
 
-## 16. Requirements Completion Matrix
+## 17. Requirements Completion Matrix
 
 | Requirement Area | Status | Implementation & Verification Evidence |
 | :--- | :---: | :--- |
@@ -437,7 +494,7 @@ Project FORESIGHT operates under formal policies ratified during Milestone 5.X:
 
 ---
 
-## 17. Future Development / Roadmap
+## 18. Future Development / Roadmap
 
 To maintain engineering transparency, system capabilities are explicitly partitioned into the **Current Production Baseline** and **Future Development Initiatives**:
 
