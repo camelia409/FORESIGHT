@@ -1,0 +1,16 @@
+{
+  "architecture_name": "Horizon-Segmented Hybrid",
+  "description": "Validation-derived architecture mapping short horizons (h=1,2) to tuned ML models and longer horizons (h=3..8) to Seasonal Naive 52w baseline.",
+  "horizon_mapping": {
+    "1": "Tuned Random Forest",
+    "2": "Tuned XGBoost",
+    "3": "Seasonal Naive 52w",
+    "4": "Seasonal Naive 52w",
+    "5": "Seasonal Naive 52w",
+    "6": "Seasonal Naive 52w",
+    "7": "Seasonal Naive 52w",
+    "8": "Seasonal Naive 52w"
+  },
+  "selection_protocol": "Expanding-window temporal validation on 4 historical origins",
+  "primary_selection_metric": "Micro WAPE"
+}

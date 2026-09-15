@@ -1,0 +1,8 @@
+column_name,dtype,non_nulls,nulls,source,snapshot_frequency,snapshot_dates,dynamic_per_sku,min,mean,median,max,std,notes
+Current_Stock,float64,1200,35350,inventory_snapshots,monthly_1st_of_month,2024-01-01_to_2025-12-01,NO,5.0,308.7,249.5,1844.0,242.3,Physical on-hand quantity at snapshot date
+On_Order,float64,1200,35350,inventory_snapshots,monthly_1st_of_month,2024-01-01_to_2025-12-01,NO,0.0,212.7,153.5,1706.0,206.5,Open PO quantity in transit; 99.4% of snapshots non-zero
+Lead_Time_Days,float64,1200,35350,inventory_snapshots,monthly_1st_of_month,2024-01-01_to_2025-12-01,YES,3.0,8.49,9.0,14.0,3.53,DYNAMIC — varies per snapshot per SKU; max 12 unique values per SKU
+Safety_Stock,float64,1200,35350,inventory_snapshots,monthly_1st_of_month,2024-01-01_to_2025-12-01,YES,5.0,85.3,71.0,413.0,63.0,DYNAMIC — varies per snapshot per SKU; all 50 SKUs change every month
+Reorder_Point,float64,1200,35350,inventory_snapshots,monthly_1st_of_month,2024-01-01_to_2025-12-01,YES,10.0,217.7,183.0,1041.0,157.9,DYNAMIC — varies per snapshot per SKU; all 50 SKUs change every month
+Inventory_Value,float64,1200,35350,inventory_snapshots,monthly_1st_of_month,2024-01-01_to_2025-12-01,NO,2444.2,1289199.0,823189.0,10412109.0,1326472.0,VALUATION BASIS UNRESOLVED — independent per-unit price; not Cost_Price nor Selling_Price
+has_inventory_snapshot,bool,36550,0,derived,daily,2024-01-01_to_2025-12-31,NO,,,,,,"True on 1200 snapshot rows; False on 35350 daily rows; never null"

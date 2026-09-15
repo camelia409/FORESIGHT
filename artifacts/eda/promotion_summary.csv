@@ -1,0 +1,13 @@
+Scope,Group,Observations,Total_Units,Mean_Daily_Units,Median_Daily_Units,Std_Daily_Units,Zero_Demand_Pct,Promotional_Lift_Pct
+Global,No Promotion (0),32800,442011,13.476,13.0,7.992,0.58,0.0
+Global,Promotion (1),3750,69799,18.613,17.0,10.79,0.35,38.12
+Category_Furniture,No Promotion (0),6560,71080,10.835,10.0,6.794,0.91,0.0
+Category_Furniture,Promotion (1),750,11218,14.957,13.0,9.173,0.4,38.04
+Category_Home Decor,No Promotion (0),6560,114528,17.459,17.0,7.995,0.02,0.0
+Category_Home Decor,Promotion (1),750,18042,24.056,23.0,10.828,0.0,37.79
+Category_Kitchen,No Promotion (0),6560,87404,13.324,12.0,7.564,0.12,0.0
+Category_Kitchen,Promotion (1),750,13740,18.32,17.0,10.022,0.0,37.5
+Category_Lighting,No Promotion (0),6560,88410,13.477,13.0,7.755,0.7,0.0
+Category_Lighting,Promotion (1),750,14021,18.695,19.0,10.495,0.4,38.71
+Category_Storage,No Promotion (0),6560,80589,12.285,12.0,8.229,1.13,0.0
+Category_Storage,Promotion (1),750,12778,17.037,17.0,11.185,0.93,38.69

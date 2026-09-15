@@ -1,0 +1,21 @@
+{
+  "model_name": "FORESIGHT Production Demand Forecaster",
+  "version": "1.0.0",
+  "creation_timestamp_utc": "2026-09-14T17:03:33.537516+00:00",
+  "author": "Project FORESIGHT ML Engineering",
+  "python_version": "3.13.6",
+  "package_versions": {
+    "lightgbm": "4.6.0",
+    "xgboost": "3.0.5",
+    "scikit-learn": "1.5.2",
+    "pandas": "2.3.0",
+    "numpy": "2.2.1",
+    "joblib": "1.4.2"
+  },
+  "training_duration_seconds": 1.9928663999962737,
+  "predictor_count": 50,
+  "horizon_count": 8,
+  "sku_count": 50,
+  "dataset_hash": "4ac6841094d83845033d1bf98989154d1d151296a240fa4bf3d918254c965f26",
+  "production_approval_status": "APPROVED"
+}

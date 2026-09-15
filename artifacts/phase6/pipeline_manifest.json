@@ -1,0 +1,93 @@
+{
+  "run_id": "20260915_143503",
+  "pipeline": "ProductionPipeline",
+  "phase": "Phase 6 \u2014 Production Orchestration",
+  "execution_start": "2026-09-15T14:35:03.675419",
+  "origin_date_requested": "2025-09-16",
+  "actual_origin_date": "2025-09-01",
+  "stages_executed": 9,
+  "skus_monitored": 50,
+  "orphan_skus_quarantined": 150,
+  "governance_policies": {
+    "valuation_basis": "Option 1D (Monetary Valuation Excluded)",
+    "on_order_policy": "Policy_B_LT",
+    "overstock_threshold": "Option 3C (N=8 Weeks Ratified)",
+    "decision_1_valuation_basis": "Option 1D \u2014 Explicit Exclusion of Monetary Valuation",
+    "valuation_basis_confirmed": false,
+    "monetary_valuation_blocked": true,
+    "decision_2_on_order_policy": "Option 2A \u2014 Policy B_LT (Lead Time <= 14 Days)",
+    "arrival_timing_confirmed": false,
+    "decision_3_overstock_threshold": "Option 3C \u2014 N = 8 Weeks",
+    "overstock_threshold_weeks": 8,
+    "overstock_threshold_status": "POLICY_RATIFIED"
+  },
+  "stages": {
+    "INGEST": {
+      "status": "PASS",
+      "elapsed_seconds": 0.0097,
+      "rows_loaded": {
+        "inventory": 4800,
+        "sku_master": 50
+      }
+    },
+    "VALIDATE": {
+      "status": "PASS",
+      "elapsed_seconds": 0.002,
+      "target_snapshot_date": "2025-09-01",
+      "production_skus": 50,
+      "orphan_skus_quarantined": 150
+    },
+    "FORECAST": {
+      "status": "PASS",
+      "elapsed_seconds": 3.7409,
+      "forecast_records": 400,
+      "model_version": "1.0.0",
+      "architecture": "Horizon-Segmented Hybrid"
+    },
+    "RISK_SCORING": {
+      "status": "PASS",
+      "elapsed_seconds": 0.0615,
+      "action_tier_counts": {
+        "MONITOR": 24,
+        "REORDER": 10,
+        "OVERSTOCK": 8,
+        "CRITICAL REORDER": 8
+      }
+    },
+    "DECISION_SUPPORT": {
+      "status": "PASS",
+      "elapsed_seconds": 0.0079,
+      "recommendation_counts": {
+        "REVIEW_PIPELINE": 24,
+        "PLACE_PO": 10,
+        "EXPEDITE_PO": 8,
+        "FREEZE_REPLENISHMENT": 8
+      },
+      "priority_counts": {
+        "3 \u2014 MEDIUM": 29,
+        "2 \u2014 HIGH": 10,
+        "1 \u2014 CRITICAL": 8,
+        "4 \u2014 LOW": 3
+      }
+    },
+    "SERVE_EXPORT": {
+      "status": "PASS",
+      "elapsed_seconds": 0.0098,
+      "artifacts_count": 2
+    }
+  },
+  "metrics": {
+    "production_skus_processed": 50,
+    "orphan_skus_quarantined": 150,
+    "forecast_records_generated": 400,
+    "risk_records_generated": 50,
+    "recommendations_generated": 50
+  },
+  "artifacts_generated": [
+    "F:\\zidio\\foresight\\artifacts\\phase6\\production_latest_recommendations.parquet",
+    "F:\\zidio\\foresight\\reports\\phase6\\production_latest_recommendations.csv"
+  ],
+  "status": "COMPLETED",
+  "execution_end": "2026-09-15T14:35:07.509437",
+  "total_elapsed_seconds": 3.834
+}

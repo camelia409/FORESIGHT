@@ -1,0 +1,18 @@
+{
+  "model_name": "lightgbm",
+  "library": "lightgbm 4.6.0",
+  "training_rows": 1800,
+  "feature_count": 50,
+  "training_duration_seconds": 0.13769850000244332,
+  "hyperparameters": {
+    "n_estimators": "100",
+    "learning_rate": "0.05",
+    "num_leaves": "31",
+    "min_child_samples": "20",
+    "subsample": "0.8",
+    "colsample_bytree": "0.8",
+    "random_state": "42",
+    "verbose": "-1",
+    "n_jobs": "-1"
+  }
+}

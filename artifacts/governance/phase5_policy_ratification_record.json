@@ -1,0 +1,62 @@
+{
+  "metadata": {
+    "record_id": "FORESIGHT-GOV-RATIFICATION-RECORD",
+    "project": "FORESIGHT",
+    "milestone": "Milestone 5.X — Governance Gate Management",
+    "lead_engineer": "Lead ML / Inventory Intelligence Engineer",
+    "timestamp": "2026-09-15T12:30:00+05:30",
+    "ratification_type": "EVIDENCE_SUPPORTED_ENGINEERING_RATIFICATION",
+    "phase_5_status": "GOVERNANCE_RATIFIED",
+    "phase_6_gate_status": "AUTHORIZED_TO_COMMENCE"
+  },
+  "decisions": {
+    "decision_1_valuation_basis": {
+      "selected_option": "Option 1D — Explicit Exclusion of Monetary Valuation from Production",
+      "governance_classification": "Category C: Safe Exclusion / Deferment",
+      "evidence_summary": "unit_iv is a constant per SKU across all 24 months (std <= 8.27e-13). Diverges from Cost_Price by 136.9% and Selling_Price by 164.9%. No authoritative GL/ERP table exists in repository.",
+      "governance_state": {
+        "valuation_basis_confirmed": false,
+        "monetary_valuation_blocked": true,
+        "excess_inventory_value": null,
+        "inventory_value_at_risk": null,
+        "capital_at_risk": null
+      },
+      "conditions_for_unblocking": "Formal delivery of ERP standard cost or GL costing feed approved by Finance."
+    },
+    "decision_2_on_order_policy": {
+      "selected_option": "Option 2A — Ratify Policy B_LT as Operational Interim Baseline",
+      "governance_classification": "Category A: Evidence-Supported Engineering Ratification",
+      "evidence_summary": "100% of observed supplier lead times are between 3 and 14 days (mean 8.49 days, std 3.53 days). No PO line-item schedule exists in data. Policy B_LT accurately maps arrival within the 2-week window without day-1 over-optimism.",
+      "governance_state": {
+        "on_order_policy": "Policy_B_LT",
+        "arrival_timing_confirmed": false,
+        "formula": "IP(t,h) = Current_Stock(t) + On_Order(t) * I[Lead_Time_Days(t) <= 7h] - Sum(y_hat)"
+      },
+      "conditions_for_advancement": "Optional future integration of ERP PO milestone feed if discrete tracking is required."
+    },
+    "decision_3_overstock_threshold": {
+      "selected_option": "Option 3C — Ratify N = 8 Weeks as Operational Overstock Policy",
+      "governance_classification": "Category A: Evidence-Supported Engineering Ratification",
+      "evidence_summary": "Directly aligns with 8-week production ML forecasting horizon. Produces 25.57% alert rate with 0% false alarms on balanced SKUs. Avoids N=4 week alert fatigue (52.2% alert rate) and unsupported N>8 extrapolation.",
+      "governance_state": {
+        "overstock_threshold_weeks": 8,
+        "overstock_threshold_status": "POLICY_RATIFIED"
+      }
+    }
+  },
+  "phase_6_authorization_check": {
+    "condition_1_valuation": {
+      "status": "SATISFIED",
+      "detail": "Monetary metrics safely and explicitly excluded under Option 1D."
+    },
+    "condition_2_on_order": {
+      "status": "SATISFIED",
+      "detail": "Policy B_LT formally ratified as operational interim baseline under Option 2A."
+    },
+    "condition_3_overstock": {
+      "status": "SATISFIED",
+      "detail": "N=8 weeks formally ratified under Option 3C."
+    },
+    "gate_verdict": "AUTHORIZED_TO_COMMENCE"
+  }
+}

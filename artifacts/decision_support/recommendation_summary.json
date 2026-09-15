@@ -1,0 +1,49 @@
+{
+  "metadata": {
+    "engine": "DecisionSupportEngine",
+    "phase": "Phase 5 \u2014 Decision Support & Recommendation Engine",
+    "execution_timestamp": "2026-09-15T12:13:16.164917",
+    "governance": {
+      "valuation_basis_confirmed": false,
+      "arrival_timing_confirmed": false,
+      "on_order_policy": "Policy_B_LT",
+      "overstock_threshold_weeks": 8,
+      "overstock_threshold_status": "ENGINEERING_RECOMMENDATION_PENDING_BUSINESS_APPROVAL",
+      "monetary_valuation_blocked": true
+    }
+  },
+  "latest_origin": "2025-09-16",
+  "latest_sku_count": 50,
+  "latest_priority_distribution": {
+    "3 \u2014 MEDIUM": 29,
+    "2 \u2014 HIGH": 10,
+    "1 \u2014 CRITICAL": 8,
+    "4 \u2014 LOW": 3
+  },
+  "latest_recommendation_distribution": {
+    "REVIEW_PIPELINE": 24,
+    "PLACE_PO": 10,
+    "EXPEDITE_PO": 8,
+    "FREEZE_REPLENISHMENT": 8
+  },
+  "panel_total_records": 450,
+  "panel_priority_distribution": {
+    "3 \u2014 MEDIUM": 224,
+    "2 \u2014 HIGH": 141,
+    "1 \u2014 CRITICAL": 69,
+    "4 \u2014 LOW": 16
+  },
+  "panel_recommendation_distribution": {
+    "REVIEW_PIPELINE": 182,
+    "PLACE_PO": 141,
+    "EXPEDITE_PO": 69,
+    "FREEZE_REPLENISHMENT": 58
+  },
+  "artifacts_created": [
+    "F:\\zidio\\foresight\\artifacts\\decision_support\\recommendations_panel.parquet",
+    "F:\\zidio\\foresight\\artifacts\\decision_support\\recommendations_latest.parquet",
+    "F:\\zidio\\foresight\\artifacts\\decision_support\\recommendation_summary.json",
+    "F:\\zidio\\foresight\\reports\\decision_support\\recommendations_panel.csv",
+    "F:\\zidio\\foresight\\reports\\decision_support\\recommendations_latest.csv"
+  ]
+}

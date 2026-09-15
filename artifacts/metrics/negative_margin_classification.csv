@@ -1,0 +1,17 @@
+SKU,pct_diff,has_sales,price_agrees,classification
+SKU002,1.59,True,True,POSSIBLY INTENTIONAL — small negative margin; possible loss-leader
+SKU007,34.0,True,True,INSUFFICIENT EVIDENCE — transactions exist but pattern unclear
+SKU009,25.13,True,True,INSUFFICIENT EVIDENCE — transactions exist but pattern unclear
+SKU010,82.94,True,True,POTENTIALLY SUSPICIOUS — cost far exceeds sell; consistent in transactions
+SKU011,15.94,True,True,INSUFFICIENT EVIDENCE — transactions exist but pattern unclear
+SKU016,40.44,True,True,INSUFFICIENT EVIDENCE — transactions exist but pattern unclear
+SKU018,1.79,True,True,POSSIBLY INTENTIONAL — small negative margin; possible loss-leader
+SKU020,41.83,True,True,INSUFFICIENT EVIDENCE — transactions exist but pattern unclear
+SKU023,42.98,True,True,INSUFFICIENT EVIDENCE — transactions exist but pattern unclear
+SKU024,68.07,True,True,POTENTIALLY SUSPICIOUS — cost far exceeds sell; consistent in transactions
+SKU028,45.12,True,True,INSUFFICIENT EVIDENCE — transactions exist but pattern unclear
+SKU033,23.61,True,True,INSUFFICIENT EVIDENCE — transactions exist but pattern unclear
+SKU037,29.57,True,True,INSUFFICIENT EVIDENCE — transactions exist but pattern unclear
+SKU038,14.72,True,True,INSUFFICIENT EVIDENCE — transactions exist but pattern unclear
+SKU040,52.59,True,True,POTENTIALLY SUSPICIOUS — cost far exceeds sell; consistent in transactions
+SKU048,79.9,True,True,POTENTIALLY SUSPICIOUS — cost far exceeds sell; consistent in transactions

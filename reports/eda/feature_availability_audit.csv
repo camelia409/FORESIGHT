@@ -1,0 +1,32 @@
+column,source,meaning,available_at_forecast_time?,leakage_risk,recommendation
+Date,sales / calendar,Observation timestamp,YES,LOW,Use for deterministic calendar extraction
+SKU,sales / master,Unique SKU ID,YES,LOW,Use as primary entity identifier & categorical feature
+Units_Sold,sales,Daily demand volume,NO (Target),CRITICAL,Future target variable; only strictly lagged history allowed
+Revenue,sales,Monetary sales,NO,CRITICAL,Target-derived (Units_Sold × Price); strict leakage if used contemporaneously
+Price,sales / master,Unit selling price,YES,LOW,Catalog price is static per SKU; available at forecast time
+Promotion,sales,Active promo indicator,YES (Cond.),MEDIUM,Available ONLY if marketing promotion schedule is planned in advance
+Product_Name,sku_master,Product catalog name,YES,LOW,Static catalog attribute; safe input
+Category,sku_master,Primary category,YES,LOW,Static hierarchy attribute; excellent categorical feature
+Subcategory,sku_master,Secondary subcategory,YES,LOW,Static hierarchy attribute; excellent categorical feature
+Launch_Date,sku_master,SKU launch date,YES,LOW,Static catalog attribute; calculate age/vintage feature
+Cost_Price,sku_master,ERP cost price,YES,LOW,Static cost attribute; safe input for financial scoring
+Selling_Price,sku_master,Catalog price,YES,LOW,Static price attribute; safe input
+Gross_Margin_Per_Unit,sku_master,Unit margin,YES,LOW,Static margin attribute; safe input
+negative_margin_flag,Derived,Cost > Selling flag,YES,LOW,Derived static flag (16 SKUs); safe input
+year,calendar,Calendar year,YES,LOW,Deterministic calendar field; safe
+month,calendar,Calendar month (1-12),YES,LOW,Deterministic calendar field; safe seasonal feature
+quarter,calendar,Calendar quarter (Q1-Q4),YES,LOW,Deterministic calendar field; safe seasonal feature
+week,calendar,ISO week (1-53),YES,LOW,Deterministic calendar field; essential weekly seasonal feature
+day_of_week,calendar,Day name,YES,LOW,Deterministic calendar field; safe for daily modeling
+is_weekend,calendar,Weekend indicator (0/1),YES,LOW,Deterministic calendar field; safe for daily modeling
+season,calendar,Season name,YES,LOW,Deterministic calendar field; safe seasonal feature
+holiday,calendar,Public holiday name,YES,LOW,Deterministic calendar field; known in advance
+is_holiday,calendar,Public holiday indicator,YES,LOW,Deterministic calendar field; known in advance
+promotion_event,calendar,Calendar promotion event,YES (Cond.),MEDIUM,Known if corporate retail calendar is published ahead
+Current_Stock,inventory,Physical stock,NO (Contemp.),HIGH,Observed only at monthly snapshots; must be lagged >= 0 at inference
+On_Order,inventory,Purchase order quantity,NO (Contemp.),HIGH,Observed only at monthly snapshots; must be lagged >= 0 at inference
+Lead_Time_Days,inventory,Supplier lead time,YES,LOW,Static operational parameter; safe input
+Safety_Stock,inventory,Configured safety stock,YES,LOW,Static operational parameter; safe input
+Reorder_Point,inventory,Reorder threshold,YES,LOW,Static operational parameter; safe input
+Inventory_Value,inventory,Monetary valuation,NO,HIGH,Unresolved valuation basis; block from predictive features
+has_inventory_snapshot,Derived,Monthly snapshot flag,YES,LOW,Deterministic indicator of 1st of month

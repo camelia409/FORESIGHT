@@ -1,0 +1,191 @@
+{
+  "phase": "4A",
+  "title": "FORESIGHT Inventory Risk Engine Specification",
+  "generated_utc": "2026-09-15T05:14:00+00:00",
+  "status": "SPECIFICATION_ONLY_NO_IMPLEMENTATION",
+  "phase_4a_scope": "Audit, specify, and gate. No implementation. No production artifact modification.",
+
+  "inventory_audit": {
+    "analysis_ready_shape": [36550, 31],
+    "snapshot_frequency": "monthly",
+    "snapshot_day": "1st_calendar_day_of_month",
+    "snapshot_dates_count": 24,
+    "snapshot_date_range": ["2024-01-01", "2025-12-01"],
+    "modeled_skus": 50,
+    "snapshot_rows_in_master_panel": 1200,
+    "non_snapshot_rows": 35350,
+    "pct_rows_with_snapshot": 3.28,
+    "pct_modeled_sku_snapshot_coverage": 100.0,
+    "on_order_zero_pct": 0.6,
+    "on_order_nonzero_pct": 99.4,
+    "dynamic_inventory_fields": {
+      "Lead_Time_Days": {
+        "is_dynamic": true,
+        "max_unique_values_per_sku": 12,
+        "interpretation": "Live operational parameter updated monthly by business. Use backward asof merge value at origin t."
+      },
+      "Safety_Stock": {
+        "is_dynamic": true,
+        "max_unique_values_per_sku": 24,
+        "interpretation": "Live operational parameter updated every monthly snapshot. Use backward asof merge value at origin t."
+      },
+      "Reorder_Point": {
+        "is_dynamic": true,
+        "max_unique_values_per_sku": 24,
+        "interpretation": "Live operational parameter updated every monthly snapshot. Use backward asof merge value at origin t."
+      }
+    },
+    "inventory_column_stats": {
+      "Current_Stock": {"min": 5.0, "mean": 308.7, "median": 249.5, "max": 1844.0, "std": 242.3},
+      "On_Order":      {"min": 0.0, "mean": 212.7, "median": 153.5, "max": 1706.0, "std": 206.5},
+      "Lead_Time_Days":{"min": 3.0, "mean": 8.49,  "median": 9.0,   "max": 14.0,  "std": 3.53},
+      "Safety_Stock":  {"min": 5.0, "mean": 85.3,  "median": 71.0,  "max": 413.0, "std": 63.0},
+      "Reorder_Point": {"min": 10.0,"mean": 217.7, "median": 183.0, "max": 1041.0,"std": 157.9},
+      "Inventory_Value":{"min": 2444.2,"mean": 1289199.0,"median": 823189.0,"max": 10412109.0,"std": 1326472.0}
+    }
+  },
+
+  "valuation_ambiguity": {
+    "status": "UNRESOLVED",
+    "config_yaml_policy": "inventory_valuation_basis = unresolved",
+    "cfg_require_policy_gate": true,
+    "implied_unit_price_range": [307.06, 7761.12],
+    "implied_unit_price_mean": 3937.84,
+    "pct_error_vs_cost_price": 123.5,
+    "pct_error_vs_selling_price": 74.8,
+    "conclusion": "Inventory_Value uses an independent per-unit reference price. Neither Cost_Price nor Selling_Price from sku_master matches. Source unidentified (possibly ERP standard cost, weighted average cost, or wholesale price).",
+    "monetary_calculations_blocked": true,
+    "unit_calculations_unblocked": true
+  },
+
+  "orphan_sku_policy": {
+    "orphan_sku_count": 150,
+    "orphan_sku_range": "SKU051-SKU200",
+    "orphan_rows_in_quarantine": 3600,
+    "orphan_rows_in_analysis_ready": 0,
+    "treatment": "quarantine",
+    "synthetic_mappings_created": 0,
+    "production_universe": "SKU001-SKU050",
+    "production_universe_sku_count": 50
+  },
+
+  "temporal_alignment": {
+    "snapshot_rule": "backward_asof_merge: Snapshot_Date <= origin_t",
+    "max_staleness_days": 30,
+    "staleness_warning_threshold_days": 28,
+    "staleness_null_threshold_days": 45,
+    "leakage_boundary": "No snapshot with Snapshot_Date > origin_t may be used",
+    "missing_snapshot_policy": {
+      "inventory_data_available": false,
+      "risk_scores": "null",
+      "risk_tier": "UNKNOWN",
+      "behavior": "log WARNING, continue other SKUs, do not raise exception"
+    }
+  },
+
+  "risk_metric_feasibility": {
+    "1_projected_inventory_position": "SUPPORTED",
+    "2_projected_stock_balance": "SUPPORTED",
+    "3_stockout_risk": "SUPPORTED",
+    "4_days_weeks_of_cover": "SUPPORTED",
+    "5_reorder_risk": "SUPPORTED_WITH_ASSUMPTION",
+    "6_excess_overstock_risk": "SUPPORTED_WITH_ASSUMPTION",
+    "7_safety_stock_breach": "SUPPORTED",
+    "8_reorder_point_breach": "SUPPORTED",
+    "9_on_order_sufficiency": "SUPPORTED_WITH_ASSUMPTION",
+    "10_inventory_value_at_risk": "BLOCKED"
+  },
+
+  "forecast_integration": {
+    "horizons_used": "all_8",
+    "rationale": "Different risk metrics require different temporal windows. WoC uses h=0, LTD uses h=1..ceil(LT/7), breach detection uses h=1..8.",
+    "cumulative_demand": "CumDemand(t,h) = SUM(y-hat(t+k), k=1..h)",
+    "model_uncertainty_by_horizon": {
+      "h1": {"model": "Tuned Random Forest", "micro_wape_pct": 9.50},
+      "h2": {"model": "Tuned XGBoost", "micro_wape_pct": 9.87},
+      "h3_to_h8": {"model": "Seasonal Naive 52w", "micro_wape_pct_range": [10.66, 10.99]}
+    }
+  },
+
+  "risk_taxonomy": {
+    "tiers": [
+      {"tier": 1, "code": "CRITICAL", "meaning": "Stockout imminent within lead time", "threshold_source": "Lead_Time_Days (DATA FIELD)"},
+      {"tier": 2, "code": "HIGH",     "meaning": "Reorder-point breach within lead-time window", "threshold_source": "Reorder_Point (DATA FIELD)"},
+      {"tier": 3, "code": "MEDIUM",   "meaning": "Reorder-point breach within 8-week horizon", "threshold_source": "Reorder_Point (DATA FIELD)"},
+      {"tier": 4, "code": "NORMAL",   "meaning": "Adequate coverage; no action needed", "threshold_source": "Absence of breach (DERIVABLE)"},
+      {"tier": 5, "code": "EXCESS",   "meaning": "Inventory exceeds demand + safety buffer", "threshold_source": "N_weeks multiplier (BUSINESS APPROVAL REQUIRED)"},
+      {"tier": 0, "code": "UNKNOWN",  "meaning": "No inventory data available at origin t", "threshold_source": "Missing snapshot policy"}
+    ]
+  },
+
+  "business_decision_blockers": [
+    {"decision": "Inventory_Value valuation basis", "critical": true, "status": "UNRESOLVED", "blocks": "all monetary risk calculations"},
+    {"decision": "On_Order inclusion in IP", "critical": true, "status": "PENDING_APPROVAL", "blocks": "every core IP calculation"},
+    {"decision": "Overstock N_weeks multiplier", "critical": true, "status": "PENDING_APPROVAL", "blocks": "EXCESS tier classification"},
+    {"decision": "Stockout definition", "critical": false, "status": "PENDING_APPROVAL", "blocks": "CRITICAL tier boundary"},
+    {"decision": "Lead-time interpretation", "critical": false, "status": "PENDING_APPROVAL", "blocks": "On_Order effective window in IP"},
+    {"decision": "Safety-stock interpretation", "critical": false, "status": "PENDING_APPROVAL", "blocks": "safety-stock breach formula"},
+    {"decision": "Missing snapshot policy", "critical": false, "status": "PENDING_APPROVAL", "blocks": "UNKNOWN tier behavior"},
+    {"decision": "Staleness threshold", "critical": false, "status": "PENDING_APPROVAL", "blocks": "confidence degradation threshold"},
+    {"decision": "Default Lead_Time_Days", "critical": false, "status": "PENDING_APPROVAL", "blocks": "LTD calculation when snapshot missing"},
+    {"decision": "Action recommendation text", "critical": false, "status": "PHASE_4B_SCOPE", "blocks": "recommendation generation"}
+  ],
+
+  "production_architecture": {
+    "api_stub": "POST /v1/risk -> HTTP 501 in api/inference.py:320-326",
+    "existing_schemas": ["RiskRequest", "RiskRecord", "RiskResponse"],
+    "files_to_create_in_phase4b": [
+      "src/risk_scoring.py",
+      "tests/test_risk_scoring.py",
+      "artifacts/risk/risk_scores_YYYY-MM-DD.parquet",
+      "artifacts/risk/risk_latest.json",
+      "reports/risk/risk_report_YYYY-MM-DD.csv"
+    ],
+    "files_to_implement_in_phase4b": [
+      "src/risk_engine.py (skeleton exists)",
+      "tests/test_risk_engine.py (placeholders exist)"
+    ]
+  },
+
+  "information_boundary": {
+    "risk_engine_may_use": [
+      "Current_Stock/On_Order/Lead_Time_Days/Safety_Stock/Reorder_Point from latest snapshot with Snapshot_Date <= origin_t",
+      "Demand forecasts y-hat(t+1)..y-hat(t+8) from production forecast engine",
+      "Historical demand features at t: rolling_mean_8, rolling_mean_4, lag features",
+      "Static SKU attributes: Cost_Price, Selling_Price, Category, Subcategory from sku_master",
+      "has_inventory_snapshot_at_origin and days_since_inventory_snapshot from feature store"
+    ],
+    "risk_engine_must_not_use": [
+      "Any inventory snapshot with Snapshot_Date > origin_t",
+      "Future demand actuals y(t+h) for any h > 0",
+      "Future replenishment orders placed after origin_t",
+      "Inventory_Value for monetary calculations until valuation_basis resolved",
+      "Any feature marked CONDITIONAL or BLOCKED in Phase 3A feature dictionary"
+    ]
+  },
+
+  "sha256_integrity": {
+    "analysis_ready.parquet": "f5d2ccf83e18c06a74caf072dc1bd7ae914cb42bc2af6818296f7ae937e59427",
+    "sales_daily.csv":        "f33e31ad52880fc4c0c630c4c336f994235736cd23f417ca049e434d2878a647",
+    "sku_master.csv":         "6a8653e898a56cc596a4a70739ddcdd9ae80a2f997d24bf93ed110f1950582a9",
+    "calendar.csv":           "9d66c227a95b5e9a37d30191e37b83aa5acb1c43398525f4855c7f72cbda4b62",
+    "inventory_snapshots.csv":"167582d50ac68b4751f481efef136e4199528f7de3fe63b80d29d4768fd5e9bd"
+  },
+
+  "production_model_hashes": {
+    "random_forest_h1.joblib": "3c04dcbd4536433c9634c2a579a3def60ef34364d08d049c18e080349f3883d3",
+    "xgboost_h2.joblib":       "3f07ba07ad12d05a79f4f029657f6b35704e991975f040a272534196367f461a",
+    "model_registry.pkl":      "9b891a4ad6f1e0d1e2d65812b3b7431ea0cab62e356ca4c45fa5da085b8fbd1e",
+    "feature_engineer.pkl":    "0bba65898129249fcee4307e2c1d70694d22246e7575280ec038d9796e73965b",
+    "architecture.json":       "00bfc2754870043dd48ff8e40df6cd1308e9de154bb8cce2204c185a5dd9e410",
+    "metadata.json":           "b62db6f24e2ac9b466c2005d2c0075555cd86b6d8528676602dba6080dc80c12"
+  },
+
+  "implementation_boundary": {
+    "risk_engine_implemented": false,
+    "production_artifacts_modified": false,
+    "raw_data_modified": false,
+    "risk_scores_produced": false,
+    "phase_4b_started": false
+  }
+}

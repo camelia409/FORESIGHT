@@ -1,0 +1,162 @@
+{
+  "metadata": {
+    "package_id": "FORESIGHT-GOV-MS5X-DECISION-PACKAGE",
+    "project": "FORESIGHT",
+    "phase": "Milestone 5.X — Executive Review & Policy Sign-Off",
+    "lead_engineer": "Lead ML / Inventory Intelligence Engineer",
+    "timestamp": "2026-09-15T12:22:00+05:30",
+    "status": "AWAITING_EXECUTIVE_SIGN_OFF",
+    "phase5_technical_status": "TECHNICALLY_COMPLETE",
+    "full_test_suite": {
+      "passed": 243,
+      "skipped": 10,
+      "failed": 0,
+      "pass_rate": 1.0
+    }
+  },
+  "decisions": {
+    "decision_1_inventory_valuation_basis": {
+      "title": "Inventory Valuation Basis for Monetary Metrics",
+      "current_status": "BLOCKED",
+      "governance_flag": "valuation_basis_confirmed = False",
+      "empirical_findings": {
+        "unit_iv_mean": 3937.84,
+        "unit_iv_range": [307.06, 7761.12],
+        "is_constant_per_sku": true,
+        "time_invariance_std": "<= 8.27e-13",
+        "hypotheses_rejected": [
+          {"name": "Cost_Price", "mean_error_pct": 136.9, "match_rate": "1 / 50 (coincidental)"},
+          {"name": "Selling_Price", "mean_error_pct": 164.9, "match_rate": "0 / 50"},
+          {"name": "Midpoint", "mean_error_pct": 135.9, "match_rate": "0 / 50"},
+          {"name": "WAC_Blend", "mean_error_pct": 133.0, "match_rate": "0 / 50"},
+          {"name": "Fixed_Margin", "status": "Inconsistent across catalog"},
+          {"name": "Price_Permutation", "status": "Zero matches"}
+        ]
+      },
+      "approval_choices": [
+        {"code": "STANDARD_COST", "description": "Standard Cost from ERP sku_master"},
+        {"code": "WAC", "description": "Weighted Average Cost from monthly GL"},
+        {"code": "FIFO", "description": "Lot-level FIFO cost ledger"},
+        {"code": "EXCLUDE_MONETARY", "description": "Suppress monetary metrics; operate in units and cover only"}
+      ],
+      "downstream_unblocked_metrics": [
+        "excess_inventory_value",
+        "inventory_value_at_risk",
+        "capital_at_risk",
+        "holding_cost_accumulation"
+      ],
+      "accountable_role": "Head of Finance / Corporate Controller"
+    },
+    "decision_2_on_order_arrival_policy": {
+      "title": "On_Order Arrival Inclusion Policy",
+      "current_status": "INTERIM_POLICY_IMPLEMENTED",
+      "governance_flag": "arrival_timing_confirmed = False",
+      "current_policy": "Policy_B_LT",
+      "formula": "IP(t,h) = Current_Stock(t) + On_Order(t) * I[Lead_Time_Days(t) <= 7h] - Sum(y_hat)",
+      "lead_time_profile": {
+        "min_days": 3.0,
+        "mean_days": 8.49,
+        "median_days": 9.0,
+        "max_days": 14.0,
+        "std_days": 3.53,
+        "percent_arriving_within_2_weeks": 100.0
+      },
+      "approval_choices": [
+        {
+          "code": "RATIFY_POLICY_B_LT",
+          "description": "Ratify Policy B_LT as standard interim procurement heuristic based on lead times <= 14 days"
+        },
+        {
+          "code": "INTEGRATE_ERP_PO_FEED",
+          "description": "Provide PO-line arrival schedule tables from ERP for discrete arrival modeling"
+        }
+      ],
+      "business_question": "Does On_Order represent a single recently placed PO or an aggregate across multiple orders?",
+      "accountable_role": "VP Supply Chain / Head of Procurement"
+    },
+    "decision_3_overstock_threshold": {
+      "title": "Overstock / Excess Inventory Threshold (N Weeks)",
+      "current_status": "ENGINEERING_RECOMMENDATION_PENDING_BUSINESS_APPROVAL",
+      "governance_flag": "overstock_threshold_status = ENGINEERING_RECOMMENDATION_PENDING_BUSINESS_APPROVAL",
+      "engineering_recommendation": 8,
+      "alternatives_evaluated": [
+        {
+          "weeks": 4,
+          "philosophy": "Aggressive Lean JIT",
+          "fleet_alert_rate_pct": 52.17,
+          "low_volume_alert_rate_pct": 93.5,
+          "alert_fatigue_risk": "Severe (flags normal cycle stock)"
+        },
+        {
+          "weeks": 6,
+          "philosophy": "Moderate Intermediate Buffer",
+          "fleet_alert_rate_pct": 36.09,
+          "low_volume_alert_rate_pct": 68.2,
+          "alert_fatigue_risk": "Moderate"
+        },
+        {
+          "weeks": 8,
+          "philosophy": "Forecast-Aligned Strategic Baseline",
+          "fleet_alert_rate_pct": 25.57,
+          "low_volume_alert_rate_pct": 52.2,
+          "alert_fatigue_risk": "Low (0% false alarms on balanced SKUs; 100% aligned with h=1..8 ML models)"
+        }
+      ],
+      "methodological_constraints": {
+        "upper_bound_weeks": 8,
+        "upper_bound_reason": "ML forecasting models terminate at h=8 weeks. Horizon > 8 cannot be validated.",
+        "lower_bound_weeks": 3,
+        "lower_bound_reason": "Mean Reorder Point is 3.47 weeks of demand to buffer supplier lead times up to 14 days."
+      },
+      "approval_choices": [4, 6, 8],
+      "accountable_role": "Head of Inventory Planning / Merchandising"
+    }
+  },
+  "phase_6_prerequisites": [
+    {
+      "id": "PREREQ-1",
+      "decision": "Decision #1",
+      "condition": "Finance confirms valuation basis or directs exclusion of monetary metrics."
+    },
+    {
+      "id": "PREREQ-2",
+      "decision": "Decision #2",
+      "condition": "Supply Chain approves Policy B_LT as interim or provides ERP PO tracking feed."
+    },
+    {
+      "id": "PREREQ-3",
+      "decision": "Decision #3",
+      "condition": "Inventory Planning formally ratifies overstock horizon (4, 6, or 8 weeks)."
+    }
+  ],
+  "raci_matrix": {
+    "Decision_1_Valuation": {
+      "Engineering": "Consulted",
+      "Finance": "Accountable / Responsible",
+      "Supply_Chain": "Consulted",
+      "ERP_Data": "Consulted",
+      "Executive_Sponsor": "Informed"
+    },
+    "Decision_2_On_Order": {
+      "Engineering": "Consulted",
+      "Finance": "Informed",
+      "Supply_Chain": "Accountable / Responsible",
+      "ERP_Data": "Responsible",
+      "Executive_Sponsor": "Informed"
+    },
+    "Decision_3_Overstock": {
+      "Engineering": "Consulted",
+      "Finance": "Consulted",
+      "Supply_Chain": "Accountable / Responsible",
+      "ERP_Data": "Informed",
+      "Executive_Sponsor": "Informed"
+    },
+    "Phase_6_Commissioning": {
+      "Engineering": "Responsible",
+      "Finance": "Consulted",
+      "Supply_Chain": "Consulted",
+      "ERP_Data": "Consulted",
+      "Executive_Sponsor": "Accountable"
+    }
+  }
+}

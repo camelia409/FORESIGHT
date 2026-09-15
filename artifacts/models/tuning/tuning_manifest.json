@@ -1,0 +1,222 @@
+{
+  "execution_timestamp_utc": "2026-09-14T14:12:27.608108+00:00",
+  "phase": "3B \u2014 Step 2: Horizon-Aware Hyperparameter Tuning",
+  "python_version": "3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "package_versions": {
+    "lightgbm": "4.6.0",
+    "xgboost": "3.0.5",
+    "scikit-learn": "1.5.2",
+    "pandas": "2.3.0",
+    "numpy": "2.2.1"
+  },
+  "random_seed": 42,
+  "total_trials_evaluated": 272,
+  "validation_origins_count": 4,
+  "validation_origins": [
+    "2025-03-04",
+    "2025-03-25",
+    "2025-04-22",
+    "2025-05-13"
+  ],
+  "final_evaluation_origins_count": 9,
+  "final_evaluation_origins": [
+    "2025-03-04",
+    "2025-03-25",
+    "2025-04-22",
+    "2025-05-13",
+    "2025-06-10",
+    "2025-07-01",
+    "2025-07-29",
+    "2025-08-19",
+    "2025-09-16"
+  ],
+  "feature_count": 50,
+  "dataset_shape": [
+    2350,
+    60
+  ],
+  "dataset_sha256": "4ac6841094d83845033d1bf98989154d1d151296a240fa4bf3d918254c965f26",
+  "total_predictions_evaluated": 14400,
+  "total_pipeline_duration_seconds": 116.41069720000087,
+  "sanity_checks": {
+    "Tuned LightGBM": {
+      "prediction_count": 3600,
+      "missing_predictions": 0,
+      "infinite_predictions": 0,
+      "negative_predictions": 0,
+      "min_prediction": 19.515457781491044,
+      "max_prediction": 217.87938135251144,
+      "sku_coverage": 50,
+      "horizon_coverage": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "origin_coverage": 9,
+      "sanity_passed": true
+    },
+    "Tuned XGBoost": {
+      "prediction_count": 3600,
+      "missing_predictions": 0,
+      "infinite_predictions": 0,
+      "negative_predictions": 0,
+      "min_prediction": 18.25688934326172,
+      "max_prediction": 222.34458923339844,
+      "sku_coverage": 50,
+      "horizon_coverage": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "origin_coverage": 9,
+      "sanity_passed": true
+    },
+    "Tuned Random Forest": {
+      "prediction_count": 3600,
+      "missing_predictions": 0,
+      "infinite_predictions": 0,
+      "negative_predictions": 0,
+      "min_prediction": 17.36275580301192,
+      "max_prediction": 230.2891343101342,
+      "sku_coverage": 50,
+      "horizon_coverage": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "origin_coverage": 9,
+      "sanity_passed": true
+    },
+    "Seasonal Naive 52w": {
+      "prediction_count": 3600,
+      "missing_predictions": 0,
+      "infinite_predictions": 0,
+      "negative_predictions": 0,
+      "min_prediction": 9.0,
+      "max_prediction": 241.0,
+      "sku_coverage": 50,
+      "horizon_coverage": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "origin_coverage": 9,
+      "sanity_passed": true
+    }
+  },
+  "adversarial_leakage_audit": [
+    {
+      "origin": "2024-12-17",
+      "model": "LightGBM",
+      "max_absolute_difference": 0.0,
+      "audit_passed": true
+    },
+    {
+      "origin": "2024-12-17",
+      "model": "XGBoost",
+      "max_absolute_difference": 0.0,
+      "audit_passed": true
+    },
+    {
+      "origin": "2024-12-17",
+      "model": "Random Forest",
+      "max_absolute_difference": 5.684341886080802e-14,
+      "audit_passed": true
+    },
+    {
+      "origin": "2025-05-27",
+      "model": "LightGBM",
+      "max_absolute_difference": 0.0,
+      "audit_passed": true
+    },
+    {
+      "origin": "2025-05-27",
+      "model": "XGBoost",
+      "max_absolute_difference": 0.0,
+      "audit_passed": true
+    },
+    {
+      "origin": "2025-05-27",
+      "model": "Random Forest",
+      "max_absolute_difference": 8.526512829121202e-14,
+      "audit_passed": true
+    },
+    {
+      "origin": "2025-11-04",
+      "model": "LightGBM",
+      "max_absolute_difference": 0.0,
+      "audit_passed": true
+    },
+    {
+      "origin": "2025-11-04",
+      "model": "XGBoost",
+      "max_absolute_difference": 0.0,
+      "audit_passed": true
+    },
+    {
+      "origin": "2025-11-04",
+      "model": "Random Forest",
+      "max_absolute_difference": 5.684341886080802e-14,
+      "audit_passed": true
+    }
+  ],
+  "summary_metrics": [
+    {
+      "model": "Tuned LightGBM",
+      "Micro_WAPE": 14.479883038832888,
+      "Macro_WAPE": 17.40932128580201,
+      "MAE": 14.261397692535834,
+      "RMSE": 18.354662062776175,
+      "prediction_count": 3600,
+      "eval_origins": 9
+    },
+    {
+      "model": "Tuned XGBoost",
+      "Micro_WAPE": 14.100432272209797,
+      "Macro_WAPE": 17.087577512730654,
+      "MAE": 13.88767241636912,
+      "RMSE": 17.811765058395267,
+      "prediction_count": 3600,
+      "eval_origins": 9
+    },
+    {
+      "model": "Tuned Random Forest",
+      "Micro_WAPE": 15.634621087869446,
+      "Macro_WAPE": 17.408361385265174,
+      "MAE": 15.398712027454705,
+      "RMSE": 20.104065223757956,
+      "prediction_count": 3600,
+      "eval_origins": 9
+    },
+    {
+      "model": "Seasonal Naive 52w",
+      "Micro_WAPE": 10.674398140836171,
+      "Macro_WAPE": 13.000064526372357,
+      "MAE": 10.513333333333334,
+      "RMSE": 13.729550449871095,
+      "prediction_count": 3600,
+      "eval_origins": 9
+    }
+  ]
+}

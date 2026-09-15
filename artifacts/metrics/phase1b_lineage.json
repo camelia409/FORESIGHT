@@ -1,0 +1,174 @@
+{
+  "phase": "1B \u2014 Preprocessing + Data Integration",
+  "timestamp_utc": "2026-09-15T09:04:01.591209+00:00",
+  "source_datasets": {
+    "sales_daily": {
+      "file": "F:\\zidio\\foresight\\data\\raw\\sales_daily.csv",
+      "rows": 36550,
+      "sha256": ""
+    },
+    "sku_master": {
+      "file": "F:\\zidio\\foresight\\data\\raw\\sku_master.csv",
+      "rows": 50,
+      "sha256": ""
+    },
+    "calendar": {
+      "file": "F:\\zidio\\foresight\\data\\raw\\calendar.csv",
+      "rows": 731,
+      "sha256": ""
+    },
+    "inventory_snapshots": {
+      "file": "F:\\zidio\\foresight\\data\\raw\\inventory_snapshots.csv",
+      "rows": 4800,
+      "sha256": ""
+    }
+  },
+  "output_datasets": {
+    "integrated_master": {
+      "path": "F:\\zidio\\foresight\\data\\interim\\integrated_master.parquet",
+      "rows": 36550,
+      "columns": [
+        "Date",
+        "SKU",
+        "Units_Sold",
+        "Revenue",
+        "Price",
+        "Promotion",
+        "Product_Name",
+        "Category",
+        "Subcategory",
+        "Launch_Date",
+        "Cost_Price",
+        "Selling_Price",
+        "Gross_Margin_Per_Unit",
+        "negative_margin_flag",
+        "year",
+        "month",
+        "quarter",
+        "week",
+        "day_of_week",
+        "is_weekend",
+        "season",
+        "holiday",
+        "is_holiday",
+        "promotion_event",
+        "Current_Stock",
+        "On_Order",
+        "Lead_Time_Days",
+        "Safety_Stock",
+        "Reorder_Point",
+        "Inventory_Value",
+        "has_inventory_snapshot"
+      ],
+      "sha256": "f5d2ccf83e18c06a74caf072dc1bd7ae914cb42bc2af6818296f7ae937e59427"
+    },
+    "inventory_quarantine": {
+      "path": "F:\\zidio\\foresight\\data\\interim\\inventory_quarantine.parquet",
+      "rows": 3600,
+      "orphan_sku_count": 150,
+      "columns": [
+        "Snapshot_Date",
+        "SKU",
+        "Current_Stock",
+        "On_Order",
+        "Lead_Time_Days",
+        "Safety_Stock",
+        "Reorder_Point",
+        "Inventory_Value",
+        "Date",
+        "inventory_master_match_flag",
+        "inventory_quarantine_flag"
+      ],
+      "sha256": "25d41866ba690c30cebd45292ac743ef7fbe95b4ac784af67f25fd143575f322"
+    },
+    "analysis_ready": {
+      "path": "F:\\zidio\\foresight\\data\\processed\\analysis_ready.parquet",
+      "rows": 36550,
+      "unique_skus": 50,
+      "unique_dates": 731,
+      "columns": [
+        "Date",
+        "SKU",
+        "Units_Sold",
+        "Revenue",
+        "Price",
+        "Promotion",
+        "Product_Name",
+        "Category",
+        "Subcategory",
+        "Launch_Date",
+        "Cost_Price",
+        "Selling_Price",
+        "Gross_Margin_Per_Unit",
+        "negative_margin_flag",
+        "year",
+        "month",
+        "quarter",
+        "week",
+        "day_of_week",
+        "is_weekend",
+        "season",
+        "holiday",
+        "is_holiday",
+        "promotion_event",
+        "Current_Stock",
+        "On_Order",
+        "Lead_Time_Days",
+        "Safety_Stock",
+        "Reorder_Point",
+        "Inventory_Value",
+        "has_inventory_snapshot"
+      ],
+      "sha256": "f5d2ccf83e18c06a74caf072dc1bd7ae914cb42bc2af6818296f7ae937e59427"
+    }
+  },
+  "configuration": {
+    "orphan_sku_treatment": "quarantine",
+    "negative_margin_treatment": "preserve_and_flag",
+    "inventory_valuation_basis": "unresolved",
+    "forecasting_universe": "master_only",
+    "revenue_price_tol": 0.01
+  },
+  "transformations_applied": [
+    {
+      "step": "normalize_sales",
+      "rows_affected": 36550,
+      "details": "Verified dtypes, non-negativity, and Revenue == Units_Sold \u00d7 Price. Rows: 36550",
+      "timestamp": "2026-09-15T09:04:01.378406+00:00"
+    },
+    {
+      "step": "normalize_sku_master",
+      "rows_affected": 50,
+      "details": "Normalised sku_master. Identified 16 negative-margin SKUs (flagged, not altered).",
+      "timestamp": "2026-09-15T09:04:01.381365+00:00"
+    },
+    {
+      "step": "normalize_calendar",
+      "rows_affected": 731,
+      "details": "Standardised date -> Date, preserved calendar attributes and structural NaNs.",
+      "timestamp": "2026-09-15T09:04:01.384355+00:00"
+    },
+    {
+      "step": "normalize_inventory",
+      "rows_affected": 4800,
+      "details": "Normalised inventory. Aligned: 1200 rows (50 SKUs). Quarantined: 3600 rows (150 orphan SKUs).",
+      "timestamp": "2026-09-15T09:04:01.394255+00:00"
+    },
+    {
+      "step": "handle_known_quality_issues",
+      "rows_affected": 50,
+      "details": "Applied policies: orphan=quarantine, neg_margin=preserve_and_flag, inv_val_basis=unresolved",
+      "timestamp": "2026-09-15T09:04:01.394328+00:00"
+    },
+    {
+      "step": "integrate_datasets",
+      "rows_affected": 36550,
+      "details": "Integrated 4 datasets into single daily panel: 50 SKUs \u00d7 731 dates = 36550 rows. Inventory snapshots aligned: 1200.",
+      "timestamp": "2026-09-15T09:04:01.442697+00:00"
+    }
+  ],
+  "invariants_summary": {
+    "total_checks": 16,
+    "all_passed": true
+  }
+}

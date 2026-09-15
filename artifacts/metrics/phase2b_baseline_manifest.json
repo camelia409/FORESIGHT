@@ -1,0 +1,60 @@
+{
+  "phase": "2B",
+  "execution_timestamp_utc": "2026-09-14T11:26:16.126041+00:00",
+  "source_dataset": "F:\\zidio\\foresight\\data\\processed\\analysis_ready.parquet",
+  "source_hash_sha256": "f5d2ccf83e18c06a74caf072dc1bd7ae914cb42bc2af6818296f7ae937e59427",
+  "analysis_ready_hash_sha256": "f5d2ccf83e18c06a74caf072dc1bd7ae914cb42bc2af6818296f7ae937e59427",
+  "quarantine_hash_sha256": "25d41866ba690c30cebd45292ac743ef7fbe95b4ac784af67f25fd143575f322",
+  "interim_weekly_dataset": "F:\\zidio\\foresight\\data\\interim\\baseline_weekly_demand.parquet",
+  "target": "Units_Sold (weekly aggregate per SKU)",
+  "forecast_frequency": "Weekly (ISO Mon-Sun, W-MON anchor)",
+  "forecast_horizon_weeks": 8,
+  "week_definition": "Monday-anchored; week_start = Monday of the Mon-Sun block",
+  "total_weeks": 106,
+  "dataset_start": "2023-12-26",
+  "dataset_end": "2025-12-30",
+  "training_period": {
+    "start": "2023-12-26",
+    "end": "2024-12-17",
+    "n_weeks": 52
+  },
+  "validation_period": {
+    "n_rolling_origins": 12,
+    "first_origin": "2024-12-17",
+    "last_origin": "2025-09-16"
+  },
+  "holdout_period": {
+    "start": "2025-11-11",
+    "end": "2025-12-30",
+    "n_weeks": 8,
+    "status": "RESERVED \u2014 untouched during baseline selection"
+  },
+  "baseline_models": [
+    "naive",
+    "seasonal_naive",
+    "ma4",
+    "ma8",
+    "ses"
+  ],
+  "model_descriptions": {
+    "naive": "Naive",
+    "seasonal_naive": "Seasonal Naive (52w)",
+    "ma4": "Moving Avg 4w",
+    "ma8": "Moving Avg 8w",
+    "ses": "SES (\u03b1=0.3)"
+  },
+  "metric_definitions": {
+    "WAPE": "sum(|y-y_hat|) / sum(|y|) x 100 [%] \u2014 primary; zero-denominator returns NaN",
+    "MAE": "mean(|y-y_hat|) [units/week]",
+    "RMSE": "sqrt(mean((y-y_hat)^2)) [units/week]"
+  },
+  "intermittent_methods_excluded": "All 50 SKUs are Smooth (ADI_max=1.086, CV2_max=0.316)",
+  "drift_excluded": "YoY demand flat (2024: 256,585 vs 2025: 255,225 units)",
+  "random_seed": 42,
+  "config": {
+    "forecast_horizon_weeks": 8,
+    "n_backtest_folds": 12,
+    "min_train_weeks": 52,
+    "backtest_step_weeks": 1
+  }
+}

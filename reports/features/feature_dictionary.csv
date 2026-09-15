@@ -1,0 +1,55 @@
+feature_name,feature_group,source_column,formula,frequency,available_at,uses_future_data,leakage_status,inference_requirement,missingness_behavior,justification
+lag_1,Demand Lags,Units_Sold,y(t),Weekly,Origin t,NO,SAFE,Last closed week demand,Zero preserved; NaN during warm-up,Core autoregressive signal
+lag_2,Demand Lags,Units_Sold,y(t-1),Weekly,Origin t,NO,SAFE,2-week prior demand,Zero preserved; NaN during warm-up,Recent demand momentum
+lag_3,Demand Lags,Units_Sold,y(t-2),Weekly,Origin t,NO,SAFE,3-week prior demand,Zero preserved; NaN during warm-up,Recent demand momentum
+lag_4,Demand Lags,Units_Sold,y(t-3),Weekly,Origin t,NO,SAFE,4-week prior demand,Zero preserved; NaN during warm-up,Trailing 1-month benchmark
+lag_8,Demand Lags,Units_Sold,y(t-7),Weekly,Origin t,NO,SAFE,8-week prior demand,Zero preserved; NaN during warm-up,Horizon-aligned cycle
+lag_12,Demand Lags,Units_Sold,y(t-11),Weekly,Origin t,NO,SAFE,12-week prior demand,Zero preserved; NaN during warm-up,Quarterly boundary signal
+lag_13,Demand Lags,Units_Sold,y(t-12),Weekly,Origin t,NO,SAFE,13-week prior demand,Zero preserved; NaN during warm-up,Quarterly cycle (52/4)
+lag_26,Demand Lags,Units_Sold,y(t-25),Weekly,Origin t,NO,SAFE,26-week prior demand,Zero preserved; NaN during warm-up,Semi-annual cycle (52/2)
+lag_52,Demand Lags,Units_Sold,y(t-51),Weekly,Origin t,NO,SAFE,52-week prior demand,Zero preserved; NaN during warm-up,Annual seasonal cycle (Phase 2B primary driver)
+rolling_mean_4,Rolling Demand,Units_Sold,mean(lag_1..lag_4),Weekly,Origin t,NO,SAFE,Trailing 4-week demand,NaN during warm-up,Short-term volume baseline
+rolling_mean_8,Rolling Demand,Units_Sold,mean(lag_1..lag_8),Weekly,Origin t,NO,SAFE,Trailing 8-week demand,NaN during warm-up,Medium-term volume baseline
+rolling_mean_13,Rolling Demand,Units_Sold,mean(lag_1..lag_13),Weekly,Origin t,NO,SAFE,Trailing 13-week demand,NaN during warm-up,Quarterly volume baseline
+rolling_std_4,Rolling Demand,Units_Sold,std(lag_1..lag_4),Weekly,Origin t,NO,SAFE,Trailing 4-week demand,NaN during warm-up,Short-term demand volatility
+rolling_std_8,Rolling Demand,Units_Sold,std(lag_1..lag_8),Weekly,Origin t,NO,SAFE,Trailing 8-week demand,NaN during warm-up,Medium-term demand volatility
+rolling_min_4,Rolling Demand,Units_Sold,min(lag_1..lag_4),Weekly,Origin t,NO,SAFE,Trailing 4-week demand,NaN during warm-up,Short-term demand floor
+rolling_max_4,Rolling Demand,Units_Sold,max(lag_1..lag_4),Weekly,Origin t,NO,SAFE,Trailing 4-week demand,NaN during warm-up,Short-term demand ceiling
+ewma_decay_03,EWMA Demand,Units_Sold,ewm(alpha=0.3),Weekly,Origin t,NO,SAFE,Historical series,Continuous recursive initialization,Exponential decay (mirrors top SES model)
+ewma_decay_01,EWMA Demand,Units_Sold,ewm(alpha=0.1),Weekly,Origin t,NO,SAFE,Historical series,Continuous recursive initialization,Long-horizon exponential decay
+trend_ratio_4_8,Demand Trends,Units_Sold,roll_mean_4 / (roll_mean_8 + eps),Weekly,Origin t,NO,SAFE,Rolling means,Epsilon protection against div-by-zero,Short-to-medium demand momentum
+trend_ratio_4_13,Demand Trends,Units_Sold,roll_mean_4 / (roll_mean_13 + eps),Weekly,Origin t,NO,SAFE,Rolling means,Epsilon protection against div-by-zero,Short-to-quarterly demand momentum
+demand_acceleration,Demand Trends,Units_Sold,(lag_1 - lag_4) / 3.0,Weekly,Origin t,NO,SAFE,Demand lags,NaN during warm-up,Demand velocity / slope
+origin_week_of_year,Calendar Seasonality,Date,week(origin),Weekly,Origin t,NO,SAFE,Origin date timestamp,"Deterministic, 1..53",Annual weekly seasonality
+origin_month,Calendar Seasonality,Date,month(origin),Weekly,Origin t,NO,SAFE,Origin date timestamp,"Deterministic, 1..12",Monthly seasonality
+origin_quarter,Calendar Seasonality,Date,quarter(origin),Weekly,Origin t,NO,SAFE,Origin date timestamp,"Deterministic, 1..4",Quarterly seasonality
+sin_week_annual,Calendar Seasonality,Date,sin(2pi*week/52.1775),Weekly,Origin t,NO,SAFE,Origin date timestamp,"Continuous [-1, 1]",Harmonic annual Fourier component
+cos_week_annual,Calendar Seasonality,Date,cos(2pi*week/52.1775),Weekly,Origin t,NO,SAFE,Origin date timestamp,"Continuous [-1, 1]",Harmonic annual Fourier component
+promo_days_last_4w,Promotion History,Promotion,sum(promo_days[t-3:t]),Weekly,Origin t,NO,SAFE,Historical promo schedule,Zero filled,Recent promotional intensity
+promo_days_last_8w,Promotion History,Promotion,sum(promo_days[t-7:t]),Weekly,Origin t,NO,SAFE,Historical promo schedule,Zero filled,Medium-term promotional intensity
+promo_intensity_last_13w,Promotion History,Promotion,sum(promo_days[t-12:t]) / 91.0,Weekly,Origin t,NO,SAFE,Historical promo schedule,Zero filled,Quarterly promotional ratio
+promo_active_last_week,Promotion History,Promotion,1 if promo_days(t) > 0 else 0,Weekly,Origin t,NO,SAFE,Historical promo schedule,Binary 0/1,Contemporaneous promotion at origin
+Selling_Price,Pricing & Margins,Selling_Price,catalog Selling_Price,Static,Origin t,NO,SAFE,Product catalog,100% complete,Unit revenue anchor
+log_price,Pricing & Margins,Selling_Price,ln(Selling_Price),Static,Origin t,NO,SAFE,Product catalog,100% complete,Linearized price elasticity scaling
+Cost_Price,Pricing & Margins,Cost_Price,catalog Cost_Price,Static,Origin t,NO,SAFE,Product catalog,100% complete,Unit procurement cost
+Gross_Margin_Per_Unit,Pricing & Margins,Gross_Margin_Per_Unit,Selling_Price - Cost_Price,Static,Origin t,NO,SAFE,Product catalog,100% complete,Unit profitability
+margin_rate,Pricing & Margins,Gross_Margin_Per_Unit,Margin / Selling_Price,Static,Origin t,NO,SAFE,Product catalog,100% complete,Gross margin percentage
+price_vs_category_median_ratio,Pricing & Margins,Selling_Price,Price / Category_Median,Static,Origin t,NO,SAFE,Product catalog,100% complete,Within-category price positioning
+Price_Tier,Pricing & Margins,Selling_Price,Budget / Mid-Range / Premium,Static,Origin t,NO,SAFE,Product catalog,100% complete,Categorical price tier
+Category,Product Hierarchy,Category,Catalog Category,Static,Origin t,NO,SAFE,Product catalog,100% complete,Primary merchandise hierarchy
+Subcategory,Product Hierarchy,Subcategory,Catalog Subcategory,Static,Origin t,NO,SAFE,Product catalog,100% complete,Secondary merchandise hierarchy
+negative_margin_flag,Product Hierarchy,Cost/Selling,Cost > Selling (0/1),Static,Origin t,NO,SAFE,Derived catalog flag,100% complete (16 SKUs),Negative unit margin indicator
+days_since_launch,Product Hierarchy,Launch_Date,(origin - Launch_Date).days,Weekly,Origin t,NO,SAFE,Origin date & Launch_Date,Positive integer,SKU age / maturity
+latest_known_stock,Inventory Context,Current_Stock,Current_Stock at latest snapshot <= t,Monthly snapshot,Origin t,NO,SAFE,Latest physical snapshot,Observed value; never forward-filled,Actual available physical stock
+latest_known_on_order,Inventory Context,On_Order,On_Order at latest snapshot <= t,Monthly snapshot,Origin t,NO,SAFE,Latest physical snapshot,Observed value; never forward-filled,Open replenishment purchase order
+days_since_inventory_snapshot,Inventory Context,Snapshot_Date,(origin - snapshot_date).days,Weekly,Origin t,NO,SAFE,Snapshot timestamp,0 to 35 days,Inventory telemetry latency
+stock_to_trailing_demand_ratio,Inventory Context,Stock / Demand,latest_stock / (roll_mean_4 + eps),Weekly,Origin t,NO,SAFE,Snapshot & demand,Epsilon protected,Days/weeks of supply proxy
+Lead_Time_Days,Inventory Context,Lead_Time_Days,Configured lead time,Static,Origin t,NO,SAFE,Inventory master,100% complete,Supplier lead time
+Safety_Stock,Inventory Context,Safety_Stock,Configured safety stock,Static,Origin t,NO,SAFE,Inventory master,100% complete,Buffer threshold
+Reorder_Point,Inventory Context,Reorder_Point,Configured reorder point,Static,Origin t,NO,SAFE,Inventory master,100% complete,Replenishment trigger threshold
+has_inventory_snapshot_at_origin,Missingness & Governance,Snapshot_Date,1 if snapshot on origin else 0,Weekly,Origin t,NO,SAFE,Origin timestamp,Binary 0/1,Fresh inventory observation indicator
+is_inventory_stale,Missingness & Governance,Snapshot_Date,1 if days_since > 35 else 0,Weekly,Origin t,NO,SAFE,Origin timestamp,Binary 0/1,Stale telemetry indicator
+future_planned_promo_h1..h8,Promotion Schedule,Promotion,Planned marketing event at t+h,Weekly,Origin t,CONDITIONAL,CONDITIONAL,Requires published marketing calendar before origin t,Binary 0/1 if calendar exists; else BLOCKED,Future promotional lift driver (+38.1%)
+Units_Sold_future,Future Actuals,Units_Sold,y(t+h),Future,t+h,YES,TARGET,Target variable,N/A,Primary forecasting objective
+Revenue_future,Target Derived,Revenue,Units_Sold * Price,Future,t+h,YES,LEAKAGE,BLOCKED,N/A,Target-derived monetary leakage
+Inventory_Value,Inventory Valuation,Inventory_Value,Stock * Price,Snapshot,Origin t,NO,LEAKAGE,BLOCKED,Unresolved basis (cost vs selling),Monetary valuation conflict (Phase 1B)

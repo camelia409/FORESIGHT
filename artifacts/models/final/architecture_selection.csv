@@ -1,0 +1,9 @@
+horizon,selected_model,validation_micro_wape,seasonal_naive_validation_wape,lightgbm_validation_wape,xgboost_validation_wape,random_forest_validation_wape,validation_delta,selection_reason
+1,Tuned Random Forest,8.880341742439974,9.240953221535745,9.0139977055365,8.954648567529663,8.880341742439974,-0.3606114790957715,Tuned Random Forest outperforms Seasonal Naive by 0.36 pp on validation Micro WAPE
+2,Tuned XGBoost,9.080980016469768,9.44110733873074,9.288191106799767,9.080980016469768,9.262681861716187,-0.360127322260972,Tuned XGBoost outperforms Seasonal Naive by 0.36 pp on validation Micro WAPE
+3,Seasonal Naive 52w,9.479194158529076,9.479194158529076,10.604988945451334,10.384914941520083,10.891916522374537,0.0,Seasonal Naive 52w outperforms all ML candidates on validation Micro WAPE (closest candidate was 10.38%)
+4,Seasonal Naive 52w,10.411546539166183,10.411546539166183,10.690207179838621,10.765710804523053,11.776238933640341,0.0,Seasonal Naive 52w outperforms all ML candidates on validation Micro WAPE (closest candidate was 10.69%)
+5,Seasonal Naive 52w,9.746405929100813,9.746405929100813,11.511458183347575,11.459616190919451,12.941743745130896,0.0,Seasonal Naive 52w outperforms all ML candidates on validation Micro WAPE (closest candidate was 11.46%)
+6,Seasonal Naive 52w,10.078072719161275,10.078072719161275,13.788099358986482,13.202694738227663,14.597427102794795,0.0,Seasonal Naive 52w outperforms all ML candidates on validation Micro WAPE (closest candidate was 13.20%)
+7,Seasonal Naive 52w,10.884575907436783,10.884575907436783,17.911977763240543,17.565256661417504,19.941378953047113,0.0,Seasonal Naive 52w outperforms all ML candidates on validation Micro WAPE (closest candidate was 17.57%)
+8,Seasonal Naive 52w,10.284832327767644,10.284832327767644,19.517470837698166,18.36188783659457,22.278391593258657,0.0,Seasonal Naive 52w outperforms all ML candidates on validation Micro WAPE (closest candidate was 18.36%)

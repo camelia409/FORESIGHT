@@ -1,0 +1,11 @@
+metric_id,metric_name,feasibility,required_inputs,assumption_required,blocked_by,notes
+1,projected_inventory_position,SUPPORTED,"Current_Stock; On_Order; Lead_Time_Days; y-hat(t+1..h)",On_Order delivery timing interpretation,,"IP(t,h) = Stock + On_Order*I[LT<=7h] - CumDemand. Core metric for all downstream calculations."
+2,projected_stock_balance,SUPPORTED,"Current_Stock; y-hat(t+1..h)",,,"SB(t,h) = Stock - CumDemand. Conservative variant; excludes On_Order."
+3,stockout_risk,SUPPORTED,"IP(t,h) for h=1..8; AvgWeeklyDemand",On_Order inclusion rule,,"Binary: IP<0 at any h. Continuous: normalized [0,1] score."
+4,days_weeks_of_cover,SUPPORTED,"Current_Stock; On_Order; rolling_mean_8",,,"WoC = IP(t,0)/AvgWeeklyDemand. DoS = WoC*7. Zero demand -> WoC = infinity."
+5,reorder_risk,SUPPORTED WITH ASSUMPTION,"IP(t,h); Reorder_Point; Lead_Time_Days",On_Order delivery timing,,"RP_BREACH = 1 if any IP(t,k) < Reorder_Point. First breach week computed."
+6,excess_overstock_risk,SUPPORTED WITH ASSUMPTION,"IP(t,8); AvgWeeklyDemand; Safety_Stock",Business-approved N_weeks overstock multiplier,,"OS = max(0, (IP(t,0)-Threshold)/IP(t,0)). Threshold = N_weeks*AvgDemand+SS."
+7,safety_stock_breach,SUPPORTED,"IP(t,h) for h=1..8; Safety_Stock",,,"SS_BREACH = 1 if any IP(t,k) < Safety_Stock(t)."
+8,reorder_point_breach,SUPPORTED,"IP(t,h) for h=1..8; Reorder_Point",,,"RP_BREACH = 1 if any IP(t,k) < Reorder_Point(t). First breach horizon returned."
+9,on_order_sufficiency,SUPPORTED WITH ASSUMPTION,"On_Order; Lead_Time_Days; CumDemand(LT)",On_Order single-delivery timing assumption,,"Sufficient if On_Order >= LTD. Requires business confirmation of delivery model."
+10,inventory_value_at_risk,BLOCKED,,"",inventory_valuation_basis=unresolved,"BLOCKED. Formula: IVaR = max(0,-IP)*unit_value. Cannot compute until basis confirmed."

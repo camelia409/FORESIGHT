@@ -1,0 +1,51 @@
+# ==============================================================================
+# PROJECT FORESIGHT — Docker Compose Configuration
+# Production Services: FastAPI Inference Engine & Streamlit Executive Dashboard
+# ==============================================================================
+
+version: '3.8'
+
+services:
+  foresight-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: foresight-production-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - FORESIGHT_ENV=production
+      - FORESIGHT_PORT=8000
+    volumes:
+      - ./artifacts:/app/artifacts
+      - ./reports:/app/reports
+    command: ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  foresight-dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: foresight-production-dashboard
+    restart: unless-stopped
+    ports:
+      - "8501:8501"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - FORESIGHT_ENV=production
+      - STREAMLIT_SERVER_PORT=8501
+      - STREAMLIT_SERVER_ADDRESS=0.0.0.0
+      - STREAMLIT_SERVER_HEADLESS=true
+    volumes:
+      - ./artifacts:/app/artifacts
+      - ./reports:/app/reports
+    command: ["streamlit", "run", "app/streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+    depends_on:
+      - foresight-api

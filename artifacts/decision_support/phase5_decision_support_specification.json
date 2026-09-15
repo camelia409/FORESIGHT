@@ -1,0 +1,97 @@
+{
+  "specification_version": "1.0.0",
+  "document_id": "FORESIGHT-PHASE5-SPEC",
+  "phase": "Phase 5 — Decision Support & Recommendation Engine",
+  "status": "APPROVED_FOR_IMPLEMENTATION",
+  "date": "2026-09-15",
+  "architecture_layers": [
+    "Forecast Engine (Phase 3B)",
+    "Risk Engine (Phase 4B)",
+    "Risk Classification (Phase 4B)",
+    "Decision Support Engine (Phase 5)",
+    "Operational Recommendations (Phase 5)"
+  ],
+  "recommendation_taxonomy": [
+    {
+      "code": "EXPEDITE_PO",
+      "title": "Expedite Inbound Shipment",
+      "priority": "1 — CRITICAL",
+      "priority_rank": 1,
+      "trigger": "Stockout projected within lead time window (IP <= 0 for k <= ceil(LT/7))",
+      "default_action": "Contact supplier immediately to expedite delivery or air-freight emergency shipment."
+    },
+    {
+      "code": "PLACE_PO",
+      "title": "Issue Purchase Order",
+      "priority": "2 — HIGH",
+      "priority_rank": 2,
+      "trigger": "Reorder Point breached within lead time window (IP < RP for k <= ceil(LT/7))",
+      "default_action": "Generate and release purchase order to prevent safety stock depletion."
+    },
+    {
+      "code": "REVIEW_PIPELINE",
+      "title": "Review Replenishment Pipeline",
+      "priority": "3 — MEDIUM",
+      "priority_rank": 3,
+      "trigger": "Reorder Point breached within 8-week horizon (k > ceil(LT/7))",
+      "default_action": "Review supplier schedule and prepare replenishment requisition for next cycle."
+    },
+    {
+      "code": "FREEZE_REPLENISHMENT",
+      "title": "Halt Inbound Replenishment",
+      "priority": "4 — LOW",
+      "priority_rank": 4,
+      "trigger": "Terminal excess inventory detected (Excess_WoC > 0)",
+      "default_action": "Halt or defer new purchase orders; evaluate promotional clearance or stock redistribution."
+    },
+    {
+      "code": "MAINTAIN_SCHEDULE",
+      "title": "Maintain Normal Schedule",
+      "priority": "5 — INFORMATIONAL",
+      "priority_rank": 5,
+      "trigger": "Adequate coverage across 8 weeks, no breaches, no excess",
+      "default_action": "No operational intervention required. Continue monitoring weekly demand."
+    },
+    {
+      "code": "DATA_UNAVAILABLE",
+      "title": "Snapshot Data Unavailable",
+      "priority": "0 — UNKNOWN",
+      "priority_rank": 0,
+      "trigger": "Missing inventory snapshot at origin t",
+      "default_action": "Flag to inventory accounting; verify ERP inventory snapshot synchronization."
+    }
+  ],
+  "conflict_resolution_rules": [
+    {
+      "scenario": "Simultaneous Reorder and Overstock signals",
+      "rule": "Shortage protection strictly takes precedence over holding cost. Issue EXPEDITE_PO or PLACE_PO, modulating order size to prevent excessive long-horizon inventory."
+    },
+    {
+      "scenario": "High Current Stock but Insufficient Projected Inventory",
+      "rule": "Horizon trajectory determines action. Issue replenishment alert based on forward breach week regardless of today's visual stock count."
+    },
+    {
+      "scenario": "Low Current Stock but High On_Order arriving within Lead Time",
+      "rule": "On_Order satisfies forward demand under Policy B_LT. Do not order additional units; instruct planner to verify vendor delivery confirmation."
+    }
+  ],
+  "governance_constraints": {
+    "monetary_valuation": {
+      "status": "BLOCKED",
+      "policy": "valuation_basis_confirmed = False. Monetary fields must remain null/None. Quantities expressed strictly in physical units and weeks of cover."
+    },
+    "on_order_timing": {
+      "status": "ENGINEERING_RULE",
+      "policy": "arrival_timing_confirmed = False. Delivery dates are estimates based on standard lead time under Policy B_LT."
+    },
+    "overstock_threshold": {
+      "status": "ENGINEERING_RECOMMENDATION_PENDING_BUSINESS_APPROVAL",
+      "threshold_weeks": 8,
+      "policy": "Evaluated against 8-week validated production forecast horizon."
+    },
+    "orphan_sku_quarantine": {
+      "status": "ENFORCED",
+      "policy": "SKU051-SKU200 strictly quarantined. Active universe is SKU001-SKU050."
+    }
+  }
+}

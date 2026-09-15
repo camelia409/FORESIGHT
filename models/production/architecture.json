@@ -1,0 +1,23 @@
+{
+  "architecture_name": "Horizon-Segmented Hybrid",
+  "horizon_mapping": {
+    "1": "Tuned Random Forest",
+    "2": "Tuned XGBoost",
+    "3": "Seasonal Naive 52w",
+    "4": "Seasonal Naive 52w",
+    "5": "Seasonal Naive 52w",
+    "6": "Seasonal Naive 52w",
+    "7": "Seasonal Naive 52w",
+    "8": "Seasonal Naive 52w"
+  },
+  "model_artifacts": {
+    "1": "models/random_forest_h1.joblib",
+    "2": "models/xgboost_h2.joblib",
+    "3": null,
+    "4": null,
+    "5": null,
+    "6": null,
+    "7": null,
+    "8": null
+  }
+}

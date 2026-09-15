@@ -1,0 +1,166 @@
+{
+  "model_family": "XGBoost",
+  "library": "xgboost 3.0.5",
+  "random_seed": 42,
+  "tuning_strategy": "horizon_aware_temporal_validation",
+  "validation_origins": [
+    "2025-03-04",
+    "2025-03-25",
+    "2025-04-22",
+    "2025-05-13"
+  ],
+  "horizons": [
+    {
+      "horizon": 1,
+      "target_column": "target_h1",
+      "training_rows": 1950,
+      "feature_count": 50,
+      "best_parameters": {
+        "objective": "reg:squarederror",
+        "learning_rate": 0.05,
+        "max_depth": 6,
+        "min_child_weight": 1,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "reg_alpha": 0.0,
+        "reg_lambda": 1.0
+      },
+      "validation_micro_wape": 8.954648567529663,
+      "training_duration_seconds": 0.12743810000029043,
+      "artifact_path": "models\\tuned\\xgboost\\model_h1.joblib"
+    },
+    {
+      "horizon": 2,
+      "target_column": "target_h2",
+      "training_rows": 1900,
+      "feature_count": 50,
+      "best_parameters": {
+        "objective": "reg:absoluteerror",
+        "learning_rate": 0.04,
+        "max_depth": 4,
+        "min_child_weight": 2,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "reg_alpha": 0.5,
+        "reg_lambda": 1.0
+      },
+      "validation_micro_wape": 9.080980016469768,
+      "training_duration_seconds": 0.08151050000014948,
+      "artifact_path": "models\\tuned\\xgboost\\model_h2.joblib"
+    },
+    {
+      "horizon": 3,
+      "target_column": "target_h3",
+      "training_rows": 1850,
+      "feature_count": 50,
+      "best_parameters": {
+        "objective": "reg:absoluteerror",
+        "learning_rate": 0.06,
+        "max_depth": 6,
+        "min_child_weight": 2,
+        "subsample": 0.85,
+        "colsample_bytree": 0.85,
+        "reg_alpha": 0.2,
+        "reg_lambda": 0.5
+      },
+      "validation_micro_wape": 10.384914941520083,
+      "training_duration_seconds": 0.13510590000078082,
+      "artifact_path": "models\\tuned\\xgboost\\model_h3.joblib"
+    },
+    {
+      "horizon": 4,
+      "target_column": "target_h4",
+      "training_rows": 1800,
+      "feature_count": 50,
+      "best_parameters": {
+        "objective": "reg:absoluteerror",
+        "learning_rate": 0.04,
+        "max_depth": 4,
+        "min_child_weight": 2,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "reg_alpha": 0.5,
+        "reg_lambda": 1.0
+      },
+      "validation_micro_wape": 10.765710804523053,
+      "training_duration_seconds": 0.07779959999970743,
+      "artifact_path": "models\\tuned\\xgboost\\model_h4.joblib"
+    },
+    {
+      "horizon": 5,
+      "target_column": "target_h5",
+      "training_rows": 1750,
+      "feature_count": 50,
+      "best_parameters": {
+        "objective": "reg:absoluteerror",
+        "learning_rate": 0.04,
+        "max_depth": 5,
+        "min_child_weight": 2,
+        "subsample": 0.8,
+        "colsample_bytree": 0.75,
+        "reg_alpha": 0.5,
+        "reg_lambda": 1.0
+      },
+      "validation_micro_wape": 11.459616190919451,
+      "training_duration_seconds": 0.09651790000134497,
+      "artifact_path": "models\\tuned\\xgboost\\model_h5.joblib"
+    },
+    {
+      "horizon": 6,
+      "target_column": "target_h6",
+      "training_rows": 1700,
+      "feature_count": 50,
+      "best_parameters": {
+        "objective": "reg:absoluteerror",
+        "learning_rate": 0.04,
+        "max_depth": 5,
+        "min_child_weight": 2,
+        "subsample": 0.8,
+        "colsample_bytree": 0.75,
+        "reg_alpha": 0.5,
+        "reg_lambda": 1.0
+      },
+      "validation_micro_wape": 13.202694738227663,
+      "training_duration_seconds": 0.09553579999919748,
+      "artifact_path": "models\\tuned\\xgboost\\model_h6.joblib"
+    },
+    {
+      "horizon": 7,
+      "target_column": "target_h7",
+      "training_rows": 1650,
+      "feature_count": 50,
+      "best_parameters": {
+        "objective": "reg:absoluteerror",
+        "learning_rate": 0.04,
+        "max_depth": 4,
+        "min_child_weight": 2,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "reg_alpha": 0.5,
+        "reg_lambda": 1.0
+      },
+      "validation_micro_wape": 17.565256661417504,
+      "training_duration_seconds": 0.07823480000297423,
+      "artifact_path": "models\\tuned\\xgboost\\model_h7.joblib"
+    },
+    {
+      "horizon": 8,
+      "target_column": "target_h8",
+      "training_rows": 1600,
+      "feature_count": 50,
+      "best_parameters": {
+        "objective": "reg:absoluteerror",
+        "learning_rate": 0.03,
+        "max_depth": 4,
+        "min_child_weight": 3,
+        "subsample": 0.75,
+        "colsample_bytree": 0.7,
+        "reg_alpha": 1.0,
+        "reg_lambda": 1.5
+      },
+      "validation_micro_wape": 18.36188783659457,
+      "training_duration_seconds": 0.07377790000100504,
+      "artifact_path": "models\\tuned\\xgboost\\model_h8.joblib"
+    }
+  ]
+}

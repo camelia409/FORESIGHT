@@ -1,0 +1,49 @@
+{
+  "metadata": {
+    "document_id": "FORESIGHT-GOV-FINAL-GATE-STATUS",
+    "project": "FORESIGHT",
+    "phase": "Milestone 5.X — Governance Gate Management",
+    "lead_engineer": "Lead ML / Inventory Intelligence Engineer",
+    "timestamp": "2026-09-15T12:30:00+05:30",
+    "phase_5_status": "GOVERNANCE_RATIFIED",
+    "phase_6_gate_status": "AUTHORIZED_TO_COMMENCE",
+    "phase_6_implementation_status": "NOT_STARTED"
+  },
+  "gate_evaluations": {
+    "decision_1": {
+      "name": "Inventory Valuation Basis",
+      "selected_option": "1D",
+      "verdict": "RESOLVED",
+      "detail": "Monetary valuation explicitly excluded from production. Metrics remain null; physical unit/cover metrics operational."
+    },
+    "decision_2": {
+      "name": "On_Order Arrival Policy",
+      "selected_option": "2A",
+      "verdict": "RESOLVED",
+      "detail": "Policy B_LT formally ratified as operational interim baseline. Accounts for observed lead times <= 14 days."
+    },
+    "decision_3": {
+      "name": "Overstock Threshold",
+      "selected_option": "3C",
+      "verdict": "RESOLVED",
+      "detail": "N=8 weeks formally ratified as operational policy. Fully aligned with 8-week production ML forecasting horizon."
+    }
+  },
+  "verification_summary": {
+    "test_suite": {
+      "passed": 243,
+      "skipped": 10,
+      "failed": 0
+    },
+    "production_universe_skus": 50,
+    "orphan_skus_quarantined": 150,
+    "upstream_artifacts_sha256_match": true,
+    "phase_6_scaffolding_present": false
+  },
+  "authorization": {
+    "authorized": true,
+    "status": "AUTHORIZED_TO_COMMENCE",
+    "conditions_met": true,
+    "instruction_required_to_commence": true
+  }
+}

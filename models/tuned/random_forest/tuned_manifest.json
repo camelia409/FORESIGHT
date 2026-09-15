@@ -1,0 +1,134 @@
+{
+  "model_family": "Random Forest",
+  "library": "scikit-learn RandomForestRegressor",
+  "random_seed": 42,
+  "tuning_strategy": "horizon_aware_temporal_validation",
+  "validation_origins": [
+    "2025-03-04",
+    "2025-03-25",
+    "2025-04-22",
+    "2025-05-13"
+  ],
+  "horizons": [
+    {
+      "horizon": 1,
+      "target_column": "target_h1",
+      "training_rows": 1950,
+      "feature_count": 50,
+      "best_parameters": {
+        "max_depth": 8,
+        "min_samples_split": 8,
+        "min_samples_leaf": 3,
+        "max_features": 0.7
+      },
+      "validation_micro_wape": 8.880341742439974,
+      "training_duration_seconds": 0.18008170000030077,
+      "artifact_path": "models\\tuned\\random_forest\\model_h1.joblib"
+    },
+    {
+      "horizon": 2,
+      "target_column": "target_h2",
+      "training_rows": 1900,
+      "feature_count": 50,
+      "best_parameters": {
+        "max_depth": 6,
+        "min_samples_split": 10,
+        "min_samples_leaf": 4,
+        "max_features": 0.6
+      },
+      "validation_micro_wape": 9.262681861716187,
+      "training_duration_seconds": 0.12119620000157738,
+      "artifact_path": "models\\tuned\\random_forest\\model_h2.joblib"
+    },
+    {
+      "horizon": 3,
+      "target_column": "target_h3",
+      "training_rows": 1850,
+      "feature_count": 50,
+      "best_parameters": {
+        "max_depth": 5,
+        "min_samples_split": 15,
+        "min_samples_leaf": 6,
+        "max_features": 0.5
+      },
+      "validation_micro_wape": 10.891916522374537,
+      "training_duration_seconds": 0.1028729999998177,
+      "artifact_path": "models\\tuned\\random_forest\\model_h3.joblib"
+    },
+    {
+      "horizon": 4,
+      "target_column": "target_h4",
+      "training_rows": 1800,
+      "feature_count": 50,
+      "best_parameters": {
+        "max_depth": 6,
+        "min_samples_split": 12,
+        "min_samples_leaf": 5,
+        "max_features": 0.5
+      },
+      "validation_micro_wape": 11.776238933640341,
+      "training_duration_seconds": 0.10876209999696584,
+      "artifact_path": "models\\tuned\\random_forest\\model_h4.joblib"
+    },
+    {
+      "horizon": 5,
+      "target_column": "target_h5",
+      "training_rows": 1750,
+      "feature_count": 50,
+      "best_parameters": {
+        "max_depth": 10,
+        "min_samples_split": 6,
+        "min_samples_leaf": 3,
+        "max_features": 0.7
+      },
+      "validation_micro_wape": 12.941743745130896,
+      "training_duration_seconds": 0.16622429999915767,
+      "artifact_path": "models\\tuned\\random_forest\\model_h5.joblib"
+    },
+    {
+      "horizon": 6,
+      "target_column": "target_h6",
+      "training_rows": 1700,
+      "feature_count": 50,
+      "best_parameters": {
+        "max_depth": 5,
+        "min_samples_split": 15,
+        "min_samples_leaf": 6,
+        "max_features": 0.5
+      },
+      "validation_micro_wape": 14.597427102794795,
+      "training_duration_seconds": 0.09763369999927818,
+      "artifact_path": "models\\tuned\\random_forest\\model_h6.joblib"
+    },
+    {
+      "horizon": 7,
+      "target_column": "target_h7",
+      "training_rows": 1650,
+      "feature_count": 50,
+      "best_parameters": {
+        "max_depth": 5,
+        "min_samples_split": 15,
+        "min_samples_leaf": 6,
+        "max_features": 0.5
+      },
+      "validation_micro_wape": 19.941378953047113,
+      "training_duration_seconds": 0.09903140000096755,
+      "artifact_path": "models\\tuned\\random_forest\\model_h7.joblib"
+    },
+    {
+      "horizon": 8,
+      "target_column": "target_h8",
+      "training_rows": 1600,
+      "feature_count": 50,
+      "best_parameters": {
+        "max_depth": 5,
+        "min_samples_split": 15,
+        "min_samples_leaf": 6,
+        "max_features": 0.5
+      },
+      "validation_micro_wape": 22.278391593258657,
+      "training_duration_seconds": 0.09909799999877578,
+      "artifact_path": "models\\tuned\\random_forest\\model_h8.joblib"
+    }
+  ]
+}

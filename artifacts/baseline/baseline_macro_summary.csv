@@ -1,0 +1,6 @@
+model,Macro_WAPE,Micro_WAPE,WAPE_difference,n_skus
+seasonal_naive,13.3659,11.141,2.2249,50
+ses,13.8061,12.694,1.1121,50
+ma4,13.8243,12.6283,1.196,50
+ma8,14.648,13.6618,0.9862,50
+naive,14.8033,13.155,1.6483,50

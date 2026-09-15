@@ -1,0 +1,32 @@
+column_name,dtype,source_dataset,transformation,missing_count,business_meaning
+Date,datetime64[ns],sales_daily / calendar,"Coerced to datetime64[ns], standardized from Date/date",0,"Calendar date of sales observation (daily grain, 2024-01-01 to 2025-12-31)"
+SKU,object,sales_daily / sku_master,Stripped string representation,0,Unique master stock keeping unit identifier (SKU001–SKU050)
+Units_Sold,int64,sales_daily,Preserved exact raw integer; non-negative asserted,0,Quantity of units sold on Date for SKU (includes legitimate zero demand)
+Revenue,float64,sales_daily,Preserved exact raw float; verified Revenue == Units_Sold × Price,0,Gross monetary sales revenue generated
+Price,float64,sales_daily,Preserved exact raw float,0,Transaction selling price per unit on Date for SKU
+Promotion,int64,sales_daily,Preserved exact raw binary integer (0 or 1),0,Daily SKU-level active promotion indicator
+Product_Name,object,sku_master,Preserved stripped string,0,Commercial product description name
+Category,object,sku_master,Preserved stripped string,0,Primary product hierarchy classification category
+Subcategory,object,sku_master,Preserved stripped string,0,Secondary product hierarchy classification subcategory
+Launch_Date,datetime64[ns],sku_master,Coerced to datetime64[ns],0,Official market launch date of the product SKU
+Cost_Price,float64,sku_master,Preserved exact raw float,0,Unit procurement / manufacturing cost from ERP
+Selling_Price,float64,sku_master,Preserved exact raw float,0,Catalog unit selling price from ERP
+Gross_Margin_Per_Unit,float64,sku_master,Preserved exact raw float,0,Catalog gross margin per unit (Selling_Price - Cost_Price)
+negative_margin_flag,bool,Derived (sku_master),Boolean flag derived as (Cost_Price > Selling_Price); values preserved,0,Indicator that procurement cost exceeds catalog selling price (16 SKUs)
+year,int64,calendar,Preserved integer,0,Calendar year (2024 or 2025)
+month,int64,calendar,Preserved integer (1–12),0,Calendar month of observation
+quarter,object,calendar,Preserved string (Q1–Q4),0,Calendar financial quarter
+week,int64,calendar,Preserved integer (1–53),0,ISO week number
+day_of_week,object,calendar,Preserved string (Monday–Sunday),0,Name of day of week
+is_weekend,int64,calendar,"Preserved integer binary flag (1 if Saturday/Sunday, else 0)",0,Weekend indicator
+season,object,calendar,Preserved string,0,Climatic / retail seasonal cycle
+holiday,object,calendar,Preserved raw object; structural NaNs retained,36150,"Public holiday name (present on 8 holiday days, NaN on normal days)"
+is_holiday,int64,calendar,"Preserved integer binary flag (1 if holiday, else 0)",0,Public holiday active flag
+promotion_event,object,calendar,Preserved raw object; structural NaNs retained,32800,"Calendar-wide promotion event name (present on 75 days, NaN otherwise)"
+Current_Stock,float64,inventory_snapshots,Preserved numeric float; unobserved daily dates are NaN,35350,On-hand physical stock quantity on monthly snapshot dates (1st of month)
+On_Order,float64,inventory_snapshots,Preserved numeric float; unobserved daily dates are NaN,35350,Open purchase order quantity awaiting delivery from supplier
+Lead_Time_Days,float64,inventory_snapshots,Preserved numeric float; unobserved daily dates are NaN,35350,Supplier lead time in days for replenishment orders
+Safety_Stock,float64,inventory_snapshots,Preserved numeric float; unobserved daily dates are NaN,35350,Configured buffer stock level to absorb demand volatility
+Reorder_Point,float64,inventory_snapshots,Preserved numeric float; unobserved daily dates are NaN,35350,Stock threshold triggering a replenishment order
+Inventory_Value,float64,inventory_snapshots,Preserved raw float; valuation basis unresolved; no recalculation,35350,Recorded monetary inventory value from snapshot (basis unconfirmed)
+has_inventory_snapshot,bool,Derived (inventory_snapshots),Boolean flag indicating row is a monthly inventory snapshot date,0,"True on 1,200 monthly snapshot observations; False on 35,350 daily sales rows"

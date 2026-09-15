@@ -1,0 +1,73 @@
+# ==============================================================================
+# PROJECT FORESIGHT — .gitignore
+# ==============================================================================
+# Excludes development/runtime junk and secrets.
+# Preserves all required production data, models, artifacts, reports, and code
+# so the repository is fully runnable immediately after cloning.
+# ==============================================================================
+
+# Python byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+*.cover
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.env/
+.conda/
+
+# Environment / secrets — NEVER commit real credentials
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Certificates and keys
+*.pem
+*.key
+*.p12
+secrets/
+
+# IDE / Editor artifacts
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+*.tmp
+*.bak
+
+# OS-generated files
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+
+# Logs
+*.log
+logs/
+
+# Scratch & temporary development folders
+scratch/
+tmp/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+wheels/

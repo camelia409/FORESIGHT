@@ -1,0 +1,82 @@
+{
+  "model_family": "LightGBM",
+  "library": "lightgbm 4.6.0",
+  "random_seed": 42,
+  "baseline_hyperparameters": {
+    "n_estimators": 100,
+    "learning_rate": 0.05,
+    "num_leaves": 31,
+    "min_child_samples": 20,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "random_state": 42,
+    "verbose": -1,
+    "n_jobs": -1
+  },
+  "horizons": [
+    {
+      "horizon": 1,
+      "target_column": "target_h1",
+      "training_rows": 1950,
+      "feature_count": 50,
+      "training_duration_seconds": 0.3168974000000162,
+      "artifact_path": "models\\candidates\\lightgbm\\model_h1.joblib"
+    },
+    {
+      "horizon": 2,
+      "target_column": "target_h2",
+      "training_rows": 1900,
+      "feature_count": 50,
+      "training_duration_seconds": 0.1546885999996448,
+      "artifact_path": "models\\candidates\\lightgbm\\model_h2.joblib"
+    },
+    {
+      "horizon": 3,
+      "target_column": "target_h3",
+      "training_rows": 1850,
+      "feature_count": 50,
+      "training_duration_seconds": 0.19313039999906323,
+      "artifact_path": "models\\candidates\\lightgbm\\model_h3.joblib"
+    },
+    {
+      "horizon": 4,
+      "target_column": "target_h4",
+      "training_rows": 1800,
+      "feature_count": 50,
+      "training_duration_seconds": 0.13769850000244332,
+      "artifact_path": "models\\candidates\\lightgbm\\model_h4.joblib"
+    },
+    {
+      "horizon": 5,
+      "target_column": "target_h5",
+      "training_rows": 1750,
+      "feature_count": 50,
+      "training_duration_seconds": 0.13670469999851775,
+      "artifact_path": "models\\candidates\\lightgbm\\model_h5.joblib"
+    },
+    {
+      "horizon": 6,
+      "target_column": "target_h6",
+      "training_rows": 1700,
+      "feature_count": 50,
+      "training_duration_seconds": 0.13985580000007758,
+      "artifact_path": "models\\candidates\\lightgbm\\model_h6.joblib"
+    },
+    {
+      "horizon": 7,
+      "target_column": "target_h7",
+      "training_rows": 1650,
+      "feature_count": 50,
+      "training_duration_seconds": 0.22492369999963557,
+      "artifact_path": "models\\candidates\\lightgbm\\model_h7.joblib"
+    },
+    {
+      "horizon": 8,
+      "target_column": "target_h8",
+      "training_rows": 1600,
+      "feature_count": 50,
+      "training_duration_seconds": 0.24857239999982994,
+      "artifact_path": "models\\candidates\\lightgbm\\model_h8.joblib"
+    }
+  ]
+}

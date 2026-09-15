@@ -1,0 +1,37 @@
+{
+  "run_id": "20260913_081650",
+  "project": "FORESIGHT",
+  "version": "0.2.0",
+  "phases_done": [],
+  "stages": {
+    "ingest": {
+      "status": "completed",
+      "elapsed_s": 0.069
+    },
+    "validate": {
+      "status": "completed",
+      "elapsed_s": 0.104
+    }
+  },
+  "raw_hashes_before": {
+    "sales_daily.csv": "f33e31ad52880fc4c0c630c4c336f994235736cd23f417ca049e434d2878a647",
+    "sku_master.csv": "6a8653e898a56cc596a4a70739ddcdd9ae80a2f997d24bf93ed110f1950582a9",
+    "calendar.csv": "9d66c227a95b5e9a37d30191e37b83aa5acb1c43398525f4855c7f72cbda4b62",
+    "inventory_snapshots.csv": "167582d50ac68b4751f481efef136e4199528f7de3fe63b80d29d4768fd5e9bd"
+  },
+  "raw_hashes_after": {
+    "sales_daily.csv": "f33e31ad52880fc4c0c630c4c336f994235736cd23f417ca049e434d2878a647",
+    "sku_master.csv": "6a8653e898a56cc596a4a70739ddcdd9ae80a2f997d24bf93ed110f1950582a9",
+    "calendar.csv": "9d66c227a95b5e9a37d30191e37b83aa5acb1c43398525f4855c7f72cbda4b62",
+    "inventory_snapshots.csv": "167582d50ac68b4751f481efef136e4199528f7de3fe63b80d29d4768fd5e9bd"
+  },
+  "hash_integrity": "PASS",
+  "validation": {
+    "n_pass": 44,
+    "n_warning": 4,
+    "n_fail": 0,
+    "has_critical": false,
+    "report_md": "F:\\zidio\\foresight\\reports\\data_quality\\phase1_validation_report.md",
+    "report_csv": "F:\\zidio\\foresight\\artifacts\\metrics\\phase1_validation_results.csv"
+  }
+}

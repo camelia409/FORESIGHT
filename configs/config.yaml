@@ -1,0 +1,174 @@
+# ==============================================================================
+# PROJECT FORESIGHT — Master Configuration
+# configs/config.yaml
+# ==============================================================================
+# This file is the single source of truth for all project-level settings.
+# Do NOT hard-code values in src/ modules — always derive from this file
+# via src.config.CFG and src.config.PATHS.
+#
+# Business-policy decisions are EXPLICIT here. If a value is marked
+# [UNRESOLVED], the pipeline will gate the dependent stage and refuse to
+# proceed silently. Do not change [UNRESOLVED] values without business sign-off.
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# Project identity
+# ------------------------------------------------------------------------------
+project_name: "FORESIGHT"
+project_version: "0.2.0"   # Phase 1A — data ingestion + validation
+
+# ------------------------------------------------------------------------------
+# Forecasting settings
+# ------------------------------------------------------------------------------
+forecast_horizon_weeks: 8        # 8-week forward demand forecast
+forecast_frequency: "W-MON"      # ISO week starting Monday
+primary_metric: "WAPE"           # Weighted Absolute Percentage Error
+
+# ------------------------------------------------------------------------------
+# Backtesting settings
+# ------------------------------------------------------------------------------
+n_backtest_folds: 12             # number of rolling-origin folds
+min_train_weeks: 52              # minimum training history required per fold
+backtest_step_weeks: 1           # origin advances 1 week per fold
+
+# ------------------------------------------------------------------------------
+# Reproducibility
+# ------------------------------------------------------------------------------
+random_seed: 42
+
+# ------------------------------------------------------------------------------
+# Data quality thresholds (from Phase 0 audit)
+# ------------------------------------------------------------------------------
+revenue_price_tol: 0.01          # |Revenue - Units_Sold × Price| tolerance
+
+# ------------------------------------------------------------------------------
+# Data paths  (relative to project root foresight/)
+# Modify only if the directory structure changes.
+# All paths must be project-relative — no absolute OS paths.
+# ------------------------------------------------------------------------------
+data:
+  raw_dir:        "data/raw"
+  interim_dir:    "data/interim"
+  processed_dir:  "data/processed"
+
+  # Raw file names (immutable — DO NOT rename)
+  sales_daily:         "sales_daily.csv"
+  sku_master:          "sku_master.csv"
+  calendar:            "calendar.csv"
+  inventory_snapshots: "inventory_snapshots.csv"
+
+# ------------------------------------------------------------------------------
+# Report / artifact output paths (relative to project root)
+# ------------------------------------------------------------------------------
+reports:
+  data_quality_dir: "reports/data_quality"
+  eda_dir:          "reports/eda"
+  model_dir:        "reports/model"
+  executive_dir:    "reports/executive"
+
+artifacts:
+  metrics_dir:     "artifacts/metrics"
+  figures_dir:     "artifacts/figures"
+  predictions_dir: "artifacts/predictions"
+
+# ------------------------------------------------------------------------------
+# Model paths
+# ------------------------------------------------------------------------------
+models:
+  dir:            "models"
+  baseline_dir:   "models/baseline"
+  production_dir: "models/production"
+
+# ==============================================================================
+# ENGINEERING POLICY DECISIONS
+# These reflect the outcomes of the Phase-0b forensic investigation.
+# They are engineering handling policies, NOT claims about business truth.
+# ==============================================================================
+
+# Q1: How to handle 150 orphan inventory SKUs (SKU051–SKU200)?
+# These SKUs appear in inventory_snapshots but NOT in sku_master.
+# They have ZERO sales records and no product attributes.
+#
+# POLICY: quarantine
+#   - All orphan inventory rows are preserved in raw and interim data.
+#   - Orphan rows are tagged with orphan_flag = True.
+#   - Orphan SKUs are EXCLUDED from forecasting (forecasting universe = SKU001–SKU050).
+#   - Orphan inventory data remains available for future reconciliation.
+#   - No synthetic sku_master records are created.
+#   - No SKU mappings are inferred.
+#
+# Options: "quarantine" | "exclude" | "backfill" (backfill requires authoritative data)
+orphan_sku_treatment: "quarantine"
+
+# Q2: How to handle 16 master SKUs where Cost_Price > Selling_Price?
+# All 16 have real sales transactions. sales_daily.Price = Selling_Price exactly.
+#
+# POLICY: preserve_and_flag
+#   - Cost_Price and Selling_Price are preserved exactly.
+#   - A derived column `negative_margin_flag` is added (True where Cost_Price > Selling_Price).
+#   - These SKUs remain eligible for demand forecasting.
+#   - They are flagged for business review but NOT corrected.
+#   - Classification: ambiguous (insufficient evidence to distinguish
+#     loss-leader from cost-data error).
+#
+# Options: "preserve_and_flag" | "correct" (correction requires authoritative proof)
+negative_margin_treatment: "preserve_and_flag"
+
+# Q3: What is the valuation basis for Inventory_Value?
+# Investigation finding: Inventory_Value uses an INDEPENDENT per-unit reference
+# price that is neither Cost_Price nor Selling_Price from sku_master.
+# Mean % error vs Cost_Price: 136.9%; vs Selling_Price: 164.9%.
+#
+# POLICY: unresolved
+#   - Inventory_Value is preserved as-is in all data layers.
+#   - It is NOT recomputed or reinterpreted.
+#   - Monetary inventory-risk calculations are BLOCKED until this is resolved.
+#   - The column carries an `inventory_value_basis_flag = "unresolved"` status tag.
+#
+# Options: "cost" | "selling" | "unresolved" (do not set until ERP source confirmed)
+inventory_valuation_basis: "unresolved"
+
+# Q4: How to treat gaps in the SKU × date panel?
+# Current status: panel is 100% complete (50 SKUs × 731 days — NO gaps).
+# Setting kept for future data refreshes.
+#
+# Options: "zero_fill" | "interpolate" | "flag_only"
+panel_gap_treatment: "flag_only"
+
+# Q5: How to treat NaN in calendar event columns?
+# Confirmed during audit: NaN = structural absence (no event), not missing data.
+#
+# Options: "sentinel_none" | "keep_nan"
+calendar_nan_treatment: "sentinel_none"
+
+# ==============================================================================
+# FORECASTING UNIVERSE
+# ==============================================================================
+# Only SKUs with both sales history AND product master data are eligible.
+# Orphan SKUs (SKU051–SKU200) are excluded until sku_master is reconciled.
+forecasting_universe: "master_only"   # "master_only" | "all" (all requires reconciliation)
+
+# ==============================================================================
+# LightGBM hyperparameters (placeholders — tune during Phase 4)
+# ==============================================================================
+lightgbm:
+  objective: "regression_l1"    # MAE objective (robust to outliers)
+  metric: "mae"
+  n_estimators: 1000
+  learning_rate: 0.05
+  num_leaves: 63
+  min_child_samples: 20
+  subsample: 0.8
+  colsample_bytree: 0.8
+  reg_alpha: 0.1
+  reg_lambda: 0.1
+  early_stopping_rounds: 50
+  verbose: -1
+
+# ==============================================================================
+# Feature engineering settings
+# ==============================================================================
+feature_engineering:
+  lag_weeks: [8, 12, 26, 52]       # demand lag periods (all >= horizon, no leakage)
+  rolling_windows: [4, 8, 13]      # rolling mean/std windows
+  seasonal_period: 52               # weeks per season (yearly)
